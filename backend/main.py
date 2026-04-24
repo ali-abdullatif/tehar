@@ -52,6 +52,14 @@ def read_item(item_id: int, db: Session = Depends(get_db)):
     return db_item
 
 
+@app.get("/config", response_model=List[schemas.Config])
+def read_configs(db: Session = Depends(get_db)):
+    return crud.get_configs(db)
+
+@app.post("/config", dependencies=[Depends(verify_admin)])
+def update_config(config: schemas.ConfigUpdate, db: Session = Depends(get_db)):
+    return crud.update_config(db, config)
+
 @app.get("/categories", response_model=List[schemas.Category])
 def read_categories(db: Session = Depends(get_db)):
     return crud.get_categories(db)

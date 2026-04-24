@@ -39,147 +39,172 @@
         </div>
       </div>
 
-      <!-- Main Grid -->
-      <div class="dashboard-grid">
+      <!-- Tab Navigation -->
+      <div class="tab-nav glass-morphism">
+        <button 
+          class="tab-btn" 
+          :class="{ active: activeTab === 'items' }"
+          @click="activeTab = 'items'"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+          </svg>
+          <span>المجموعة الملكية</span>
+        </button>
+        <button 
+          class="tab-btn" 
+          :class="{ active: activeTab === 'categories' }"
+          @click="activeTab = 'categories'"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+          </svg>
+          <span>الأقسام</span>
+        </button>
+        <button 
+          class="tab-btn" 
+          :class="{ active: activeTab === 'site' }"
+          @click="activeTab = 'site'"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
+          <span>إعدادات الموقع</span>
+        </button>
+      </div>
+
+      <!-- Main Content -->
+      <div class="dashboard-content">
         
-        <!-- ── Category Management ── -->
-        <div class="panel glass-morphism category-panel">
-          <h3 class="panel-title">📂 إدارة الأقسام</h3>
-          <form @submit.prevent="addCategory" class="mini-form">
-            <input v-model="newCategoryName" type="text" placeholder="اسم القسم الجديد..." required />
-            <button type="submit" class="mini-submit-btn">إضافة</button>
-          </form>
-          <div class="category-list">
-            <div v-for="cat in categories" :key="cat.id" class="category-tag">
-              <span>{{ cat.name }}</span>
-              <button @click="deleteCategory(cat.id)" class="tag-delete">✕</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- ── Add Item Form ── -->
-        <div class="panel glass-morphism">
-          <h3 class="panel-title">✦ إضافة قطعة جديدة</h3>
-          <form @submit.prevent="addItem">
-
-            <div class="form-group">
-              <label>اسم القطعة</label>
-              <input v-model="newItem.name" type="text" required placeholder="مثال: خاتم زمرد ملكي" />
-            </div>
-
-            <div class="form-group">
-              <label>السعر (ر.س)</label>
-              <input v-model.number="newItem.price" type="number" step="0.01" required placeholder="0.00" />
-            </div>
-
-            <div class="form-group">
-              <label>القسم</label>
-              <select v-model="newItem.category_id" class="custom-select">
-                <option :value="null">بدون قسم</option>
-                <option v-for="cat in categories" :key="cat.id" :value="cat.id">
-                  {{ cat.name }}
-                </option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label>الوصف</label>
-              <textarea v-model="newItem.description" rows="3" placeholder="تفاصيل القطعة..."></textarea>
-            </div>
-
-            <!-- Image Upload with Preview -->
-            <div class="form-group">
-              <label>الصورة الرئيسية (Thumbnail)</label>
-              <div
-                class="upload-zone"
-                :class="{ 'has-image': imagePreview, 'dragging': isDragging }"
-                @click="$refs.fileInput.click()"
-                @dragover.prevent="isDragging = true"
-                @dragleave.prevent="isDragging = false"
-                @drop.prevent="handleDrop"
-              >
-                <img v-if="imagePreview" :src="imagePreview" class="image-preview" alt="Preview" />
-                <div v-else class="upload-placeholder">
-                  <span class="upload-icon">🖼</span>
-                  <p>اضغط لرفع الصورة الرئيسية</p>
-                </div>
+        <!-- Tab: Items -->
+        <div v-if="activeTab === 'items'" class="tab-pane items-grid">
+          
+          <!-- ── Add Item Form ── -->
+          <div class="panel glass-morphism">
+            <h3 class="panel-title">✦ إضافة قطعة جديدة</h3>
+            <form @submit.prevent="addItem">
+              <div class="form-group">
+                <label>اسم القطعة</label>
+                <input v-model="newItem.name" type="text" required placeholder="مثال: خاتم زمرد ملكي" />
               </div>
-              <input ref="fileInput" type="file" accept="image/*" style="display:none" @change="handleFileSelect" />
-            </div>
-
-            <!-- Gallery Images -->
-            <div class="form-group gallery-form-group">
-              <label>صور إضافية للمجموعة (Gallery)</label>
-              <div class="gallery-upload-grid">
-                <div v-for="(img, idx) in newItem.gallery_images" :key="idx" class="gallery-thumb">
-                  <img :src="img" />
-                  <button type="button" @click="newItem.gallery_images.splice(idx, 1)" class="thumb-remove">✕</button>
-                </div>
-                <button type="button" class="add-gallery-btn" @click="$refs.galleryInput.click()" :disabled="galleryLoading">
-                  <span v-if="galleryLoading" class="spinner-small"></span>
-                  <span v-else>+</span>
-                </button>
+              <div class="form-group">
+                <label>السعر (ر.س)</label>
+                <input v-model.number="newItem.price" type="number" step="0.01" required placeholder="0.00" />
               </div>
-              <input ref="galleryInput" type="file" accept="image/*" style="display:none" @change="handleGalleryUpload" />
-            </div>
-
-            <!-- Upload progress bar -->
-            <div v-if="uploadProgress > 0 && uploadProgress < 100" class="progress-bar-wrap">
-              <div class="progress-bar" :style="{ width: uploadProgress + '%' }"></div>
-            </div>
-
-            <button type="submit" class="submit-btn" :disabled="loading">
-              <span v-if="loading" class="spinner"></span>
-              <span v-else>✦ إضافة إلى المجموعة</span>
-            </button>
-          </form>
-        </div>
-
-        <!-- ── Items List ── -->
-        <div class="panel glass-morphism">
-          <h3 class="panel-title">💎 المجموعة الحالية</h3>
-
-          <div v-if="fetchLoading" class="center-msg">جاري التحميل...</div>
-          <div v-else-if="items.length === 0" class="empty-state">
-            <span style="font-size:3rem">🫙</span>
-            <p>لا توجد قطع حالياً، أضف أولى قطعك!</p>
+              <div class="form-group">
+                <label>القسم</label>
+                <select v-model="newItem.category_id" class="custom-select">
+                  <option :value="null">بدون قسم</option>
+                  <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>الوصف</label>
+                <textarea v-model="newItem.description" rows="3" placeholder="تفاصيل القطعة..."></textarea>
+              </div>
+              <div class="form-group">
+                <label>الصورة الرئيسية</label>
+                <div class="upload-zone" :class="{ 'has-image': imagePreview }" @click="$refs.fileInput.click()">
+                  <img v-if="imagePreview" :src="imagePreview" class="image-preview" />
+                  <div v-else class="upload-placeholder"><span>اضغط لرفع الصورة</span></div>
+                </div>
+                <input ref="fileInput" type="file" accept="image/*" style="display:none" @change="handleFileSelect" />
+              </div>
+              <button type="submit" class="submit-btn" :disabled="loading">✦ إضافة إلى المجموعة</button>
+            </form>
           </div>
 
-          <div v-else class="items-list">
-            <transition-group name="list" tag="div">
+          <!-- ── Items List ── -->
+          <div class="panel glass-morphism">
+            <h3 class="panel-title">💎 المجموعة الحالية</h3>
+            <div v-if="fetchLoading" class="center-msg">جاري التحميل...</div>
+            <div v-else class="items-list">
               <div v-for="item in items" :key="item.id" class="item-row">
-                <div class="item-img-wrap">
-                  <img
-                    v-if="item.image_url"
-                    :src="item.image_url"
-                    :alt="item.name"
-                    class="item-thumb"
-                  />
-                  <div v-else class="item-thumb-placeholder">✨</div>
-                </div>
+                <div class="item-img-wrap"><img v-if="item.image_url" :src="item.image_url" class="item-thumb" /></div>
                 <div class="item-info">
                   <div class="item-name">{{ item.name }}</div>
-                  <div class="item-price">
-                    {{ item.price.toLocaleString('ar-SA') }} ر.س
-                    <span v-if="item.category" class="item-cat-badge">{{ item.category.name }}</span>
-                  </div>
+                  <div class="item-price">{{ item.price.toLocaleString('ar-SA') }} ر.س</div>
                 </div>
                 <div class="item-actions">
-                  <button @click="editItem(item)" class="edit-btn" title="تعديل">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 210.336H3V17.5L16.732 3.732z" />
-                    </svg>
-                  </button>
-                  <button @click="deleteItem(item.id)" class="delete-btn" title="حذف">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
+                  <button @click="editItem(item)" class="edit-btn">✏️</button>
+                  <button @click="deleteItem(item.id)" class="delete-btn">🗑</button>
                 </div>
               </div>
-            </transition-group>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Tab: Categories -->
+        <div v-if="activeTab === 'categories'" class="tab-pane single-panel">
+          <div class="panel glass-morphism category-panel-large">
+            <h3 class="panel-title">📂 إدارة الأقسام</h3>
+            <p class="panel-desc">أضف أقساماً جديدة لتنظيم مجموعتك الملكية</p>
+            <form @submit.prevent="addCategory" class="mini-form">
+              <input v-model="newCategoryName" type="text" placeholder="اسم القسم الجديد..." required />
+              <button type="submit" class="mini-submit-btn">إضافة قسم جديد</button>
+            </form>
+            <div class="category-list-large">
+              <div v-for="cat in categories" :key="cat.id" class="category-tag-large glass-morphism">
+                <span>{{ cat.name }}</span>
+                <button @click="deleteCategory(cat.id)" class="tag-delete">✕</button>
+              </div>
+            </div>
           </div>
         </div>
+
+        <!-- Tab: Site Settings -->
+        <div v-if="activeTab === 'site'" class="tab-pane single-panel">
+          <div class="panel glass-morphism site-config-panel-large">
+            <h3 class="panel-title">🏠 محتوى الموقع</h3>
+            <p class="panel-desc">تحكم في نصوص وصور الواجهة الرئيسية ومعلومات التواصل</p>
+            
+            <div class="config-layout">
+              <div class="config-section">
+                <h4>✨ القسم الرئيسي</h4>
+                <div class="form-group">
+                  <label>عنوان الرئيسية</label>
+                  <input v-model="siteConfig.hero_title" @change="siteConfig.update('hero_title', siteConfig.hero_title)" type="text" />
+                </div>
+                <div class="form-group">
+                  <label>الوصف الترحيبي</label>
+                  <textarea v-model="siteConfig.hero_subtitle" @change="siteConfig.update('hero_subtitle', siteConfig.hero_subtitle)" rows="3"></textarea>
+                </div>
+              </div>
+
+              <div class="config-section">
+                <h4>🖼 صورة الواجهة</h4>
+                <div class="hero-preview-zone" @click="$refs.heroInput.click()">
+                  <img v-if="siteConfig.hero_image" :src="siteConfig.hero_image" class="hero-preview-img" />
+                  <div v-else class="hero-preview-placeholder">
+                    <span>رفع صورة احترافية (1920x1080)</span>
+                  </div>
+                </div>
+                <input ref="heroInput" type="file" style="display:none" @change="handleHeroUpload" />
+              </div>
+
+              <div class="config-section full-width">
+                <h4>📞 معلومات التواصل</h4>
+                <div class="config-grid-3">
+                  <div class="form-group">
+                    <label>العنوان</label>
+                    <input v-model="siteConfig.footer_address" @change="siteConfig.update('footer_address', siteConfig.footer_address)" type="text" />
+                  </div>
+                  <div class="form-group">
+                    <label>البريد الإلكتروني</label>
+                    <input v-model="siteConfig.footer_email" @change="siteConfig.update('footer_email', siteConfig.footer_email)" type="text" />
+                  </div>
+                  <div class="form-group">
+                    <label>رقم الواتساب</label>
+                    <input v-model="siteConfig.footer_phone" @change="siteConfig.update('footer_phone', siteConfig.footer_phone)" type="text" placeholder="966..." />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
 
       </div>
 
@@ -260,18 +285,19 @@
       </transition>
 
     </div>
-  </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import { siteConfig } from '@/store/siteStore';
 
 const API_URL = 'http://localhost:8000';
 const router = useRouter();
 
 // Reactive state
+const activeTab = ref('items');
 const items = ref([]);
 const categories = ref([]);
 const loading = ref(false);
@@ -380,6 +406,20 @@ const uploadImageFile = async (file) => {
     headers: { ...authHeader().headers, 'Content-Type': 'multipart/form-data' },
   });
   return res.data.url;
+};
+
+const handleHeroUpload = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  try {
+    const url = await uploadImageFile(file);
+    if (url) {
+      siteConfig.hero_image = url;
+      siteConfig.update('hero_image', url);
+    }
+  } catch (e) {
+    console.error('Error uploading hero image:', e);
+  }
 };
 
 const handleGalleryUpload = async (e) => {
@@ -637,9 +677,31 @@ h1 { font-size: 1.8rem; margin: 0; }
   color: var(--gold-primary);
 }
 
+.sub-section-title {
+  color: var(--gold-light);
+  margin: 2rem 0 1rem;
+  font-size: 1.1rem;
+  border-bottom: 1px solid rgba(212,175,55,0.1);
+  padding-bottom: 0.5rem;
+}
+
+.config-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.config-grid.compact {
+  grid-template-columns: 1fr 1fr;
+}
+
+.site-config-panel {
+  grid-column: span 1;
+}
+
 @media (max-width: 1200px) {
-  .dashboard-grid { grid-template-columns: 1fr 1fr; }
-  .category-panel { grid-column: span 2; }
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .site-config-panel { grid-column: span 1; }
 }
 
 .panel {
@@ -1014,6 +1076,152 @@ input:-webkit-autofill:focus {
   transition: all 0.2s ease;
 }
 .delete-btn:hover { background: rgba(206,55,55,0.3); }
+
+/* Tabs */
+.tab-nav {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 0.5rem;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(212,175,55,0.1);
+}
+
+.tab-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  padding: 1rem;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.tab-btn svg {
+  width: 20px;
+  height: 20px;
+  opacity: 0.7;
+}
+
+.tab-btn:hover {
+  background: rgba(212, 175, 55, 0.05);
+  color: var(--gold-light);
+}
+
+.tab-btn.active {
+  background: var(--gold-primary);
+  color: #0c3e2a;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+}
+
+.tab-btn.active svg {
+  color: #0c3e2a;
+  opacity: 1;
+}
+
+/* Grids */
+.items-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.single-panel {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.panel-desc {
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+  font-size: 0.9rem;
+}
+
+/* Category Large */
+.category-list-large {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.category-tag-large {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(212,175,55,0.1);
+}
+
+/* Site Config Large */
+.config-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+}
+
+.config-section h4 {
+  color: var(--gold-light);
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+.config-section.full-width {
+  grid-column: span 2;
+}
+
+.config-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.hero-preview-zone {
+  width: 100%;
+  height: 250px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px dashed rgba(212,175,55,0.3);
+  cursor: pointer;
+  position: relative;
+}
+
+.hero-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-preview-placeholder {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 2rem;
+}
+
+@media (max-width: 992px) {
+  .items-grid, .config-layout, .config-grid-3 {
+    grid-template-columns: 1fr;
+  }
+  .config-section.full-width {
+    grid-column: span 1;
+  }
+  .tab-nav {
+    flex-direction: column;
+  }
+}
 
 /* ── Edit Modal ── */
 .modal-overlay {

@@ -1,6 +1,14 @@
 from pydantic import BaseModel
 from typing import Optional, List
 
+class ConfigUpdate(BaseModel):
+    key: str
+    value: str
+
+class Config(ConfigUpdate):
+    class Config:
+        from_attributes = True
+
 # Category Schemas
 class CategoryBase(BaseModel):
     name: str

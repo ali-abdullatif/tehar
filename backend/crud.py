@@ -1,6 +1,20 @@
 from sqlalchemy.orm import Session
 import models, schemas
 
+# Config
+def get_configs(db: Session):
+    return db.query(models.SiteConfig).all()
+
+def update_config(db: Session, config: schemas.ConfigUpdate):
+    db_config = db.query(models.SiteConfig).filter(models.SiteConfig.key == config.key).first()
+    if db_config:
+        db_config.value = config.value
+    else:
+        db_config = models.SiteConfig(key=config.key, value=config.value)
+        db.add(db_config)
+    db.commit()
+    return db_config
+
 # Categories
 def get_categories(db: Session):
     return db.query(models.ItemCategory).all()

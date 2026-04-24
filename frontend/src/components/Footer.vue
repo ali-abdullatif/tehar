@@ -1,9 +1,13 @@
+<script setup>
+import { siteConfig } from '@/store/siteStore';
+</script>
+
 <template>
   <footer class="footer glass-morphism">
     <div class="container footer-content">
       <div class="footer-brand">
         <img src="@/assets/logo.png" alt="مجوهرات الملوك" class="footer-logo" />
-        <p>الأناقة التي تليق بكم منذ عام ١٩٨٥. حكايات من الذهب والألماس تروى بكل فخر وانتماء.</p>
+        <p>{{ siteConfig.hero_subtitle }}</p>
       </div>
       <div class="footer-links">
         <h4>روابط سريعة</h4>
@@ -15,9 +19,9 @@
       </div>
       <div class="footer-contact">
         <h4>تواصل معنا</h4>
-        <p>الرياض، المملكة العربية السعودية</p>
-        <p>هاتف: ٩٦٦٥٠٠٠٠٠٠٠٠+</p>
-        <p>البريد: info@kingsjewelry.sa</p>
+        <p>{{ siteConfig.footer_address }}</p>
+        <p>واتساب: {{ siteConfig.footer_phone }}+</p>
+        <p>البريد: {{ siteConfig.footer_email }}</p>
       </div>
     </div>
     <div class="copyright">

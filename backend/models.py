@@ -10,6 +10,12 @@ class ItemCategory(Base):
     
     items = relationship("JewelryItem", back_populates="category")
 
+class SiteConfig(Base):
+    __tablename__ = "site_config"
+
+    key = Column(String(100), primary_key=True)
+    value = Column(Text)
+
 class ItemImage(Base):
     __tablename__ = "item_images"
 

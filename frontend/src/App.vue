@@ -2,6 +2,12 @@
 import Navbar from './components/Navbar.vue'
 import Footer from './components/Footer.vue'
 import CartDrawer from './components/CartDrawer.vue'
+import { onMounted } from 'vue'
+import { siteConfig } from '@/store/siteStore'
+
+onMounted(() => {
+  siteConfig.fetch()
+})
 </script>
 
 <template>

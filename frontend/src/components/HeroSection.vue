@@ -2,22 +2,36 @@
   <section id="hero" class="hero fade-in">
     <div class="container hero-content">
       <div class="hero-text">
-        <h2 class="gold-gradient">سحر الذهب.. ونقاء الألماس</h2>
-        <p class="subtitle">تصاميم خالدة تجسد الفخامة العربية الأصيلة، مصاغة بأعلى درجات الدقة والجمال.</p>
+        <h2 class="gold-gradient">{{ siteConfig.hero_title }}</h2>
+        <p class="subtitle">{{ siteConfig.hero_subtitle }}</p>
         <div class="cta-group">
-          <button class="primary-btn">اكتشف المجموعة</button>
-          <button class="secondary-btn">خدمة العملاء</button>
+          <button class="primary-btn" @click="scrollToCollection">اكتشف المجموعة</button>
+          <button class="secondary-btn" @click="contactUs">تواصل معنا</button>
         </div>
       </div>
       <div class="hero-image-container">
-        <div class="image-placeholder silk-texture">
-          <div class="placeholder-icon">⌚💍</div>
-          <div class="image-caption">تصوير احترافي بدقة 8k</div>
+        <div v-if="siteConfig.hero_image" class="hero-img-wrap">
+          <img :src="siteConfig.hero_image" alt="Hero" class="hero-main-img" />
+        </div>
+        <div v-else class="image-placeholder silk-texture">
+          <div class="placeholder-icon">💍</div>
+          <div class="image-caption">تصاميم ملكية فاخرة</div>
         </div>
       </div>
     </div>
   </section>
 </template>
+<script setup>
+import { siteConfig } from '@/store/siteStore';
+
+const scrollToCollection = () => {
+  document.getElementById('collection')?.scrollIntoView({ behavior: 'smooth' });
+};
+
+const contactUs = () => {
+  window.open(`https://wa.me/${siteConfig.footer_phone}`, '_blank');
+};
+</script>
 
 <style scoped>
 .hero {
@@ -42,6 +56,24 @@
 .hero-image-container {
   flex: 62;
   height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-img-wrap {
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+  border: 1px solid rgba(212,175,55,0.2);
+}
+
+.hero-main-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .hero-text h2 {
