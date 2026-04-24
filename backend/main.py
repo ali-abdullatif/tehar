@@ -52,6 +52,15 @@ def read_item(item_id: int, db: Session = Depends(get_db)):
     return db_item
 
 
+# Tracking & Analytics
+@app.post("/analytics/track")
+def track_event(event: schemas.EventCreate, db: Session = Depends(get_db)):
+    return crud.log_event(db, event)
+
+@app.get("/analytics/dashboard", response_model=schemas.AnalyticsDashboard, dependencies=[Depends(verify_admin)])
+def get_dashboard_data(db: Session = Depends(get_db)):
+    return crud.get_analytics_dashboard(db)
+
 @app.get("/config", response_model=List[schemas.Config])
 def read_configs(db: Session = Depends(get_db)):
     return crud.get_configs(db)

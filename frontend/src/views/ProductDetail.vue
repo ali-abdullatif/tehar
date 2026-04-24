@@ -92,6 +92,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 import { cartState } from '@/store/cartStore';
+import { trackEvent } from '@/store/tracking';
 
 const API_URL = 'http://localhost:8000';
 const route = useRoute();
@@ -106,6 +107,9 @@ const fetchProduct = async () => {
     product.value = res.data;
     // Set first image as active
     activeImage.value = product.value.image_url || (product.value.images[0]?.url) || '';
+    
+    // Tracking VIEW event
+    trackEvent('view', product.value.id);
   } catch (e) {
     console.error('Error fetching product:', e);
   } finally {

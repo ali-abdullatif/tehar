@@ -9,6 +9,35 @@ class Config(ConfigUpdate):
     class Config:
         from_attributes = True
 
+# Tracking Schemas
+class EventCreate(BaseModel):
+    event_type: str
+    product_id: Optional[int] = None
+    quantity: Optional[int] = 1
+    session_id: str
+    metadata_json: Optional[str] = "{}"
+
+# Analytics Schemas
+class DailyStats(BaseModel):
+    date: str
+    count: int
+
+class HourlyStats(BaseModel):
+    hour: int
+    count: int
+
+class ProductStats(BaseModel):
+    product_name: str
+    count: int
+
+class AnalyticsDashboard(BaseModel):
+    daily_sales: List[DailyStats]
+    hourly_activity: List[HourlyStats]
+    top_viewed: List[ProductStats]
+    top_cart: List[ProductStats]
+    conversion_funnel: dict
+    cart_abandonment_rate: float
+
 # Category Schemas
 class CategoryBase(BaseModel):
     name: str

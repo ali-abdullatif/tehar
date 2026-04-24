@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 import models, schemas
+import datetime
 
 # Config
 def get_configs(db: Session):
@@ -14,6 +15,78 @@ def update_config(db: Session, config: schemas.ConfigUpdate):
         db.add(db_config)
     db.commit()
     return db_config
+
+# Tracking
+def log_event(db: Session, event: schemas.EventCreate):
+    now = datetime.datetime.utcnow()
+    db_event = models.EventLog(
+        **event.model_dump(),
+        timestamp=now,
+        date=now.date(),
+        hour=now.hour
+    )
+    db.add(db_event)
+    db.commit()
+    db.refresh(db_event)
+    return db_event
+
+# Analytics Aggregations
+from sqlalchemy import func
+
+def get_analytics_dashboard(db: Session):
+    # 1. Daily Sales (Purchases)
+    daily = db.query(
+        models.EventLog.date, 
+        func.count(models.EventLog.id)
+    ).filter(models.EventLog.event_type == 'purchase').group_by(models.EventLog.date).all()
+    
+    # 2. Hourly Activity (All events)
+    hourly = db.query(
+        models.EventLog.hour,
+        func.count(models.EventLog.id)
+    ).group_by(models.EventLog.hour).order_by(models.EventLog.hour).all()
+
+    # 3. Top Products (Views)
+    top_viewed = db.query(
+        models.JewelryItem.name, 
+        func.count(models.EventLog.id)
+    ).join(models.EventLog).filter(models.EventLog.event_type == 'view').group_by(models.JewelryItem.name).order_by(func.count(models.EventLog.id).desc()).limit(10).all()
+
+    # 4. Top Products (Add to cart)
+    top_cart = db.query(
+        models.JewelryItem.name,
+        func.count(models.EventLog.id)
+    ).join(models.EventLog).filter(models.EventLog.event_type == 'add_to_cart').group_by(models.JewelryItem.name).order_by(func.count(models.EventLog.id).desc()).limit(10).all()
+
+    # 5. Funnel
+    views_count = db.query(func.count(models.EventLog.id)).filter(models.EventLog.event_type == 'view').scalar() or 0
+    cart_count = db.query(func.count(models.EventLog.id)).filter(models.EventLog.event_type == 'add_to_cart').scalar() or 0
+    purchase_count = db.query(func.count(models.EventLog.id)).filter(models.EventLog.event_type == 'purchase').scalar() or 0
+    
+    # 6. Cart Abandonment Estimation
+    # (Sessions with add_to_cart but NO purchase)
+    sessions_with_cart = db.query(models.EventLog.session_id).filter(models.EventLog.event_type == 'add_to_cart').distinct().all()
+    sessions_with_cart = [s[0] for s in sessions_with_cart]
+    
+    sessions_with_purchase = db.query(models.EventLog.session_id).filter(models.EventLog.event_type == 'purchase').distinct().all()
+    sessions_with_purchase = [s[0] for s in sessions_with_purchase]
+    
+    abandoned_count = len(set(sessions_with_cart) - set(sessions_with_purchase))
+    total_cart_sessions = len(set(sessions_with_cart))
+    abandonment_rate = (abandoned_count / total_cart_sessions * 100) if total_cart_sessions > 0 else 0
+
+    return {
+        "daily_sales": [{"date": str(d[0]), "count": d[1]} for d in daily],
+        "hourly_activity": [{"hour": h[0], "count": h[1]} for h in hourly],
+        "top_viewed": [{"product_name": p[0], "count": p[1]} for p in top_viewed],
+        "top_cart": [{"product_name": p[0], "count": p[1]} for p in top_cart],
+        "conversion_funnel": {
+            "views": views_count,
+            "add_to_cart": cart_count,
+            "purchase": purchase_count
+        },
+        "cart_abandonment_rate": round(abandonment_rate, 2)
+    }
 
 # Categories
 def get_categories(db: Session):

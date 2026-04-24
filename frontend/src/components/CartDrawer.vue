@@ -73,6 +73,9 @@ import { cartState, cartTotal } from '@/store/cartStore';
 const totalAmount = computed(() => cartTotal());
 
 const checkoutWhatsApp = () => {
+  // Tracking PURCHASE
+  cartState.checkoutTrack();
+
   const phone = "966500000000"; // Replace with real phone
   let message = "*طلب جديد من متجر مجوهرات الملوك*\n\n";
   

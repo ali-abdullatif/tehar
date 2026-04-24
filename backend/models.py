@@ -16,6 +16,22 @@ class SiteConfig(Base):
     key = Column(String(100), primary_key=True)
     value = Column(Text)
 
+class EventLog(Base):
+    __tablename__ = "events_log"
+
+    id = Column(Integer, primary_key=True, index=True)
+    event_type = Column(String(50), index=True) # view, add_to_cart, purchase
+    product_id = Column(Integer, ForeignKey("items.id"), nullable=True, index=True)
+    quantity = Column(Integer, default=1)
+    session_id = Column(String(100), index=True)
+    timestamp = Column(DateTime, default=datetime.datetime.utcnow)
+    
+    # Derived fields for fast grouping
+    date = Column(Date, index=True) # YYYY-MM-DD
+    hour = Column(Integer, index=True) # 0-23
+    
+    metadata_json = Column(Text, nullable=True) # JSON store for extensibility
+
 class ItemImage(Base):
     __tablename__ = "item_images"
 

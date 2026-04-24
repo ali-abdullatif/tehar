@@ -1,4 +1,5 @@
 import { reactive, watch } from 'vue';
+import { trackEvent } from './tracking';
 
 // Load initial state from local storage
 const savedCart = localStorage.getItem('jewelry_cart');
@@ -16,7 +17,17 @@ export const cartState = reactive({
     } else {
       this.items.push({ ...product, quantity: 1 });
     }
+    
+    // Tracking ADD_TO_CART
+    trackEvent('add_to_cart', product.id, 1);
+    
     this.isOpen = true; // Open cart when item is added
+  },
+
+  checkoutTrack() {
+    this.items.forEach(item => {
+      trackEvent('purchase', item.id, item.quantity);
+    });
   },
   
   removeItem(id) {

@@ -71,6 +71,16 @@
           </svg>
           <span>إعدادات الموقع</span>
         </button>
+        <button 
+          class="tab-btn" 
+          :class="{ active: activeTab === 'analytics' }"
+          @click="activeTab = 'analytics'"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2" />
+          </svg>
+          <span>الإحصائيات</span>
+        </button>
       </div>
 
       <!-- Main Content -->
@@ -204,6 +214,11 @@
           </div>
         </div>
 
+        <!-- Tab: Analytics -->
+        <div v-if="activeTab === 'analytics'" class="tab-pane">
+           <AnalyticsCharts />
+        </div>
+
       </div>
 
       </div>
@@ -292,6 +307,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { siteConfig } from '@/store/siteStore';
+import AnalyticsCharts from '@/components/AnalyticsCharts.vue';
 
 const API_URL = 'http://localhost:8000';
 const router = useRouter();
