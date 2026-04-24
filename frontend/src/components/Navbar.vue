@@ -45,7 +45,6 @@ const toggleMenu = () => {
       <ul class="mobile-nav-links">
         <li><a href="#hero" @click="toggleMenu">الرئيسية</a></li>
         <li><a href="#collection" @click="toggleMenu">المجموعات</a></li>
-        <li><a href="#about" @click="toggleMenu">عن دارنا</a></li>
         <li><a href="#contact" @click="toggleMenu">اتصل بنا</a></li>
       </ul>
     </div>
