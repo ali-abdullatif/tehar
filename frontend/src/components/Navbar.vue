@@ -20,7 +20,6 @@ const toggleMenu = () => {
       <ul class="nav-links desktop-only">
         <li><a href="#hero">الرئيسية</a></li>
         <li><a href="#collection">المجموعات</a></li>
-        <li><a href="#about">عن دارنا</a></li>
         <li><a href="#contact">اتصل بنا</a></li>
       </ul>
 
