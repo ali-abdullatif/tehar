@@ -20,21 +20,45 @@ def delete_category(db: Session, category_id: int):
     return db_cat
 
 # Items
+def get_item(db: Session, item_id: int):
+    return db.query(models.JewelryItem).filter(models.JewelryItem.id == item_id).first()
+
 def get_items(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.JewelryItem).offset(skip).limit(limit).all()
 
 def create_item(db: Session, item: schemas.ItemCreate):
-    db_item = models.JewelryItem(**item.model_dump())
+    item_data = item.model_dump(exclude={"gallery_images"})
+    db_item = models.JewelryItem(**item_data)
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
+    
+    # Add gallery images
+    if item.gallery_images:
+        for img_url in item.gallery_images:
+            db_img = models.ItemImage(url=img_url, item_id=db_item.id)
+            db.add(db_img)
+        db.commit()
+        db.refresh(db_item)
+        
     return db_item
 
 def update_item(db: Session, item_id: int, item: schemas.ItemCreate):
     db_item = db.query(models.JewelryItem).filter(models.JewelryItem.id == item_id).first()
     if db_item:
-        for key, value in item.model_dump(exclude_unset=False).items():
+        item_data = item.model_dump(exclude={"gallery_images"}, exclude_unset=True)
+        for key, value in item_data.items():
             setattr(db_item, key, value)
+        
+        # Handle gallery images (replace old ones for simplicity)
+        if hasattr(item, 'gallery_images') and item.gallery_images is not None:
+            # Clear old
+            db.query(models.ItemImage).filter(models.ItemImage.item_id == item_id).delete()
+            # Add new
+            for img_url in item.gallery_images:
+                db_img = models.ItemImage(url=img_url, item_id=item_id)
+                db.add(db_img)
+        
         db.commit()
         db.refresh(db_item)
     return db_item

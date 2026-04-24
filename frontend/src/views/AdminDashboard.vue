@@ -13,14 +13,18 @@
         </div>
         <button @click="logout" class="logout-btn">
           <span>خروج</span>
-          <span>🚪</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+          </svg>
         </button>
       </div>
 
       <!-- Stats Row -->
       <div class="stats-row">
         <div class="stat-card glass-morphism">
-          <span class="stat-icon">💎</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="gold-icon" width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+          </svg>
           <div>
             <div class="stat-number">{{ items.length }}</div>
             <div class="stat-label">إجمالي القطع</div>
@@ -85,7 +89,7 @@
 
             <!-- Image Upload with Preview -->
             <div class="form-group">
-              <label>صورة القطعة</label>
+              <label>الصورة الرئيسية (Thumbnail)</label>
               <div
                 class="upload-zone"
                 :class="{ 'has-image': imagePreview, 'dragging': isDragging }"
@@ -97,26 +101,26 @@
                 <img v-if="imagePreview" :src="imagePreview" class="image-preview" alt="Preview" />
                 <div v-else class="upload-placeholder">
                   <span class="upload-icon">🖼</span>
-                  <p>اضغط لرفع صورة أو اسحبها هنا</p>
-                  <span class="upload-hint">PNG, JPG, WEBP</span>
-                </div>
-                <div v-if="imagePreview" class="image-overlay">
-                  <span>تغيير الصورة</span>
+                  <p>اضغط لرفع الصورة الرئيسية</p>
                 </div>
               </div>
-              <input
-                ref="fileInput"
-                type="file"
-                accept="image/*"
-                style="display:none"
-                @change="handleFileSelect"
-              />
-              <button
-                v-if="imagePreview"
-                type="button"
-                class="remove-image-btn"
-                @click.stop="clearImage"
-              >✕ إزالة الصورة</button>
+              <input ref="fileInput" type="file" accept="image/*" style="display:none" @change="handleFileSelect" />
+            </div>
+
+            <!-- Gallery Images -->
+            <div class="form-group gallery-form-group">
+              <label>صور إضافية للمجموعة (Gallery)</label>
+              <div class="gallery-upload-grid">
+                <div v-for="(img, idx) in newItem.gallery_images" :key="idx" class="gallery-thumb">
+                  <img :src="img" />
+                  <button type="button" @click="newItem.gallery_images.splice(idx, 1)" class="thumb-remove">✕</button>
+                </div>
+                <button type="button" class="add-gallery-btn" @click="$refs.galleryInput.click()" :disabled="galleryLoading">
+                  <span v-if="galleryLoading" class="spinner-small"></span>
+                  <span v-else>+</span>
+                </button>
+              </div>
+              <input ref="galleryInput" type="file" accept="image/*" style="display:none" @change="handleGalleryUpload" />
             </div>
 
             <!-- Upload progress bar -->
@@ -161,8 +165,16 @@
                   </div>
                 </div>
                 <div class="item-actions">
-                  <button @click="editItem(item)" class="edit-btn" title="تعديل">✏️</button>
-                  <button @click="deleteItem(item.id)" class="delete-btn" title="حذف">🗑</button>
+                  <button @click="editItem(item)" class="edit-btn" title="تعديل">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 210.336H3V17.5L16.732 3.732z" />
+                    </svg>
+                  </button>
+                  <button @click="deleteItem(item.id)" class="delete-btn" title="حذف">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
                 </div>
               </div>
             </transition-group>
@@ -202,9 +214,9 @@
                 <textarea v-model="editingItem.description" rows="3"></textarea>
               </div>
               <div class="form-group">
-                <label>صورة القطعة</label>
+                <label>الصورة الرئيسية</label>
                 <div
-                  class="upload-zone"
+                  class="upload-zone mini"
                   :class="{ 'has-image': editImagePreview, 'dragging': editIsDragging }"
                   @click="$refs.editFileInput.click()"
                   @dragover.prevent="editIsDragging = true"
@@ -214,25 +226,26 @@
                   <img v-if="editImagePreview" :src="editImagePreview" class="image-preview" alt="Preview" />
                   <div v-else class="upload-placeholder">
                     <span class="upload-icon">🖼</span>
-                    <p>اضغط لرفع صورة أو اسحبها هنا</p>
-                  </div>
-                  <div v-if="editImagePreview" class="image-overlay">
-                    <span>تغيير الصورة</span>
+                    <p>رفع صورة</p>
                   </div>
                 </div>
-                <input
-                  ref="editFileInput"
-                  type="file"
-                  accept="image/*"
-                  style="display:none"
-                  @change="handleEditFileSelect"
-                />
-                <button
-                  v-if="editImagePreview"
-                  type="button"
-                  class="remove-image-btn"
-                  @click.stop="clearEditImage"
-                >✕ إزالة الصورة</button>
+                <input ref="editFileInput" type="file" accept="image/*" style="display:none" @change="handleEditFileSelect" />
+              </div>
+
+              <!-- Edit Gallery -->
+              <div class="form-group">
+                <label>صور المجموعة</label>
+                <div class="gallery-upload-grid">
+                  <div v-for="(img, idx) in editingItem.gallery_urls" :key="idx" class="gallery-thumb">
+                    <img :src="img" />
+                    <button type="button" @click="editingItem.gallery_urls.splice(idx, 1)" class="thumb-remove">✕</button>
+                  </div>
+                  <button type="button" class="add-gallery-btn" @click="$refs.editGalleryInput.click()" :disabled="galleryLoading">
+                    <span v-if="galleryLoading" class="spinner-small"></span>
+                    <span v-else>+</span>
+                  </button>
+                </div>
+                <input ref="editGalleryInput" type="file" accept="image/*" style="display:none" @change="handleEditGalleryUpload" />
               </div>
               <div class="modal-actions">
                 <button type="button" class="cancel-btn" @click="cancelEdit">إلغاء</button>
@@ -269,8 +282,9 @@ const selectedFile = ref(null);
 const isDragging = ref(false);
 const fileInput = ref(null);
 
-const newItem = ref({ name: '', price: null, description: '', category_id: null });
+const newItem = ref({ name: '', price: null, description: '', category_id: null, gallery_images: [] });
 const newCategoryName = ref('');
+const galleryLoading = ref(false);
 
 // Edit state
 const editingItem = ref(null);
@@ -357,21 +371,39 @@ const clearImage = () => {
 };
 
 // Upload image to backend, returns URL
-const uploadImage = async () => {
-  if (!selectedFile.value) return null;
+const uploadImageFile = async (file) => {
+  if (!file) return null;
   const formData = new FormData();
-  formData.append('file', selectedFile.value);
-  uploadProgress.value = 10;
+  formData.append('file', file);
   const res = await axios.post(`${API_URL}/upload`, formData, {
     ...authHeader(),
     headers: { ...authHeader().headers, 'Content-Type': 'multipart/form-data' },
-    onUploadProgress: (evt) => {
-      uploadProgress.value = Math.round((evt.loaded / evt.total) * 90);
-    }
   });
-  uploadProgress.value = 100;
-  setTimeout(() => { uploadProgress.value = 0; }, 800);
   return res.data.url;
+};
+
+const handleGalleryUpload = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  galleryLoading.value = true;
+  try {
+    const url = await uploadImageFile(file);
+    if (url) newItem.value.gallery_images.push(url);
+  } finally {
+    galleryLoading.value = false;
+  }
+};
+
+const handleEditGalleryUpload = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  galleryLoading.value = true;
+  try {
+    const url = await uploadImageFile(file);
+    if (url) editingItem.value.gallery_urls.push(url);
+  } finally {
+    galleryLoading.value = false;
+  }
 };
 
 // Add new item
@@ -379,7 +411,7 @@ const addItem = async () => {
   loading.value = true;
   try {
     // 1. Upload image if selected
-    const imageUrl = await uploadImage();
+    const imageUrl = await uploadImageFile(selectedFile.value);
 
     // 2. Create item
     await axios.post(
@@ -392,7 +424,7 @@ const addItem = async () => {
     );
 
     // 3. Reset form
-    newItem.value = { name: '', price: null, description: '', category_id: null };
+    newItem.value = { name: '', price: null, description: '', category_id: null, gallery_images: [] };
     clearImage();
     await fetchItems();
   } catch (e) {
@@ -420,7 +452,10 @@ const deleteItem = async (id) => {
 
 // ── Edit Item ──
 const editItem = (item) => {
-  editingItem.value = { ...item };
+  editingItem.value = { 
+    ...item, 
+    gallery_urls: item.images ? item.images.map(i => i.url) : [] 
+  };
   editImagePreview.value = item.image_url || null;
   editSelectedFile.value = null;
 };
@@ -484,7 +519,8 @@ const updateItem = async () => {
         price: editingItem.value.price,
         description: editingItem.value.description || '',
         category_id: editingItem.value.category_id,
-        image_url: imageUrl || ''
+        image_url: imageUrl || '',
+        gallery_images: editingItem.value.gallery_urls
       },
       authHeader()
     );
@@ -595,6 +631,10 @@ h1 { font-size: 1.8rem; margin: 0; }
   display: grid;
   grid-template-columns: 280px 1fr 1fr;
   gap: 1.5rem;
+}
+
+.gold-icon {
+  color: var(--gold-primary);
 }
 
 @media (max-width: 1200px) {
@@ -870,6 +910,78 @@ input:-webkit-autofill:focus {
   justify-content: center;
   font-size: 1.5rem;
 }
+.upload-zone {
+  width: 100%;
+  height: 180px;
+  border: 2px dashed rgba(212, 175, 55, 0.2);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s;
+}
+
+.upload-zone.mini { height: 120px; }
+
+.gallery-upload-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.gallery-thumb {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  position: relative;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+.gallery-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 7px; }
+
+.thumb-remove {
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  width: 20px;
+  height: 20px;
+  background: #ff4757;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-gallery-btn {
+  width: 60px;
+  height: 60px;
+  border: 2px dashed rgba(212, 175, 55, 0.3);
+  background: none;
+  color: var(--gold-primary);
+  font-size: 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.add-gallery-btn:hover { background: rgba(212, 175, 55, 0.05); }
+
+.spinner-small {
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(212, 175, 55, 0.2);
+  border-top-color: var(--gold-primary);
+  border-radius: 50%;
+  animation: rotate 1s linear infinite;
+}
+@keyframes rotate { to { transform: rotate(360deg); } }
 
 .item-info { flex: 1; }
 .item-name { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.2rem; }

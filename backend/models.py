@@ -10,6 +10,15 @@ class ItemCategory(Base):
     
     items = relationship("JewelryItem", back_populates="category")
 
+class ItemImage(Base):
+    __tablename__ = "item_images"
+
+    id = Column(Integer, primary_key=True, index=True)
+    url = Column(String(500))
+    item_id = Column(Integer, ForeignKey("items.id"))
+
+    item = relationship("JewelryItem", back_populates="images")
+
 class JewelryItem(Base):
     __tablename__ = "items"
 
@@ -17,7 +26,8 @@ class JewelryItem(Base):
     name = Column(String(255), index=True)
     description = Column(Text, nullable=True)
     price = Column(Float)
-    image_url = Column(String(500), nullable=True)
+    image_url = Column(String(500), nullable=True) # Primary thumbnail
     category_id = Column(Integer, ForeignKey("categories.id"), nullable=True)
 
     category = relationship("ItemCategory", back_populates="items")
+    images = relationship("ItemImage", back_populates="item", cascade="all, delete-orphan")

@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import { cartState, cartCount } from '@/store/cartStore'
 
 const isMenuOpen = ref(false)
 
@@ -23,16 +24,21 @@ const toggleMenu = () => {
         <li><a href="#contact">اتصل بنا</a></li>
       </ul>
 
-      <div class="nav-actions desktop-only">
-        <button class="gold-btn">تسجيل الدخول</button>
-      </div>
+      <!-- Cart & Mobile Toggle -->
+      <div class="nav-extra">
+        <button class="cart-toggle" @click="cartState.toggleCart" aria-label="Cart">
+          <svg xmlns="http://www.w3.org/2000/svg" class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+          <span v-if="cartCount() > 0" class="cart-badge">{{ cartCount() }}</span>
+        </button>
 
-      <!-- Mobile Toggle -->
-      <button class="menu-toggle mobile-only" @click="toggleMenu" aria-label="Toggle Menu">
-        <span class="bar" :class="{ 'active': isMenuOpen }"></span>
-        <span class="bar" :class="{ 'active': isMenuOpen }"></span>
-        <span class="bar" :class="{ 'active': isMenuOpen }"></span>
-      </button>
+        <button class="menu-toggle mobile-only" @click="toggleMenu" aria-label="Toggle Menu">
+          <span class="bar" :class="{ 'active': isMenuOpen }"></span>
+          <span class="bar" :class="{ 'active': isMenuOpen }"></span>
+          <span class="bar" :class="{ 'active': isMenuOpen }"></span>
+        </button>
+      </div>
     </div>
 
     <!-- Mobile Menu Overlay -->
@@ -42,7 +48,6 @@ const toggleMenu = () => {
         <li><a href="#collection" @click="toggleMenu">المجموعات</a></li>
         <li><a href="#about" @click="toggleMenu">عن دارنا</a></li>
         <li><a href="#contact" @click="toggleMenu">اتصل بنا</a></li>
-        <li class="mt-2"><button class="gold-btn w-full">تسجيل الدخول</button></li>
       </ul>
     </div>
   </nav>
@@ -63,6 +68,12 @@ const toggleMenu = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.nav-extra {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .nav-logo {
@@ -108,6 +119,41 @@ const toggleMenu = () => {
   background: var(--emerald-light);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(12, 62, 42, 0.2);
+}
+
+.cart-toggle {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  transition: transform 0.3s ease;
+}
+
+.nav-icon {
+  width: 28px;
+  height: 28px;
+  color: var(--gold-primary);
+}
+
+.cart-badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #ff4757;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border: 2px solid white;
 }
 
 /* Mobile Toggle Styles */

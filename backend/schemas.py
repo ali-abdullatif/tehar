@@ -14,6 +14,20 @@ class Category(CategoryBase):
     class Config:
         from_attributes = True
 
+# Image Schemas
+class ItemImageBase(BaseModel):
+    url: str
+
+class ItemImageCreate(ItemImageBase):
+    pass
+
+class ItemImage(ItemImageBase):
+    id: int
+    item_id: int
+
+    class Config:
+        from_attributes = True
+
 # Item Schemas
 class ItemBase(BaseModel):
     name: str
@@ -23,11 +37,12 @@ class ItemBase(BaseModel):
     category_id: Optional[int] = None
 
 class ItemCreate(ItemBase):
-    pass
+    gallery_images: Optional[List[str]] = [] # List of URLs
 
 class Item(ItemBase):
     id: int
     category: Optional[Category] = None
+    images: List[ItemImage] = []
 
     class Config:
         from_attributes = True

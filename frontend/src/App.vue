@@ -1,6 +1,7 @@
 <script setup>
 import Navbar from './components/Navbar.vue'
 import Footer from './components/Footer.vue'
+import CartDrawer from './components/CartDrawer.vue'
 </script>
 
 <template>
@@ -10,6 +11,7 @@ import Footer from './components/Footer.vue'
       <router-view></router-view>
     </main>
     <Footer />
+    <CartDrawer />
   </div>
 </template>
 

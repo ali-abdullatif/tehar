@@ -13,14 +13,22 @@
         <div v-for="(group, catName) in groupedItems" :key="catName" class="category-section">
           <h4 class="category-title">✦ {{ catName }}</h4>
           <div class="grid-layout">
-            <div v-for="item in group" :key="item.id" class="jewelry-card glass-morphism">
-              <div class="card-image-placeholder" :style="item.image_url ? `background-image: url(${item.image_url}); background-size: cover; background-position: center;` : ''">
-                <span v-if="!item.image_url" class="icon">✨</span>
+            <div v-for="item in group" :key="item.id" class="jewelry-card glass-morphism" @click="$router.push(`/product/${item.id}`)">
+              <div class="card-image-placeholder">
+                <img v-if="item.image_url" :src="item.image_url" class="card-img" />
+                <svg v-else xmlns="http://www.w3.org/2000/svg" class="placeholder-icon" width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
               </div>
               <div class="card-content">
                 <h5>{{ item.name }}</h5>
                 <p class="price">{{ item.price.toLocaleString('ar-SA') }} ر.س</p>
-                <button class="view-btn">عرض التفاصيل</button>
+                <div class="card-actions">
+                  <button @click.stop="cartState.addItem(item)" class="add-cart-btn">
+                    إضافة للحقيبة 🛒
+                  </button>
+                  <button class="view-btn">التفاصيل</button>
+                </div>
               </div>
             </div>
           </div>
@@ -33,6 +41,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
+import { cartState } from '@/store/cartStore';
 
 const API_URL = 'http://localhost:8000';
 const items = ref([]);
@@ -164,16 +173,64 @@ onMounted(fetchItems);
   color: var(--text-white);
 }
 
+.card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.add-cart-btn {
+  width: 100%;
+  background: var(--emerald-deep);
+  color: white;
+  border: none;
+  padding: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.add-cart-btn:hover {
+  background: var(--emerald-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(12, 62, 42, 0.2);
+}
+
+.view-btn {
+  font-size: 0.9rem;
+}
+
+.card-image-placeholder {
+  height: 250px;
+  background: rgba(12, 62, 42, 0.03);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.placeholder-icon {
+  color: var(--gold-primary);
+  opacity: 0.3;
+}
+
 @media (max-width: 768px) {
   .section-padding {
     padding: 60px 0;
   }
-  
   .grid-layout {
     gap: 1.5rem;
     padding: 0 1rem;
   }
-  
   .section-header {
     margin-bottom: 2.5rem;
   }
@@ -183,7 +240,6 @@ onMounted(fetchItems);
   .grid-layout {
     grid-template-columns: 1fr;
   }
-  
   .jewelry-card {
     padding: 1rem;
   }
