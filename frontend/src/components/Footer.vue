@@ -2,7 +2,7 @@
   <footer class="footer glass-morphism">
     <div class="container footer-content">
       <div class="footer-brand">
-        <h3 class="gold-gradient">مجوهرات الملوك</h3>
+        <img src="@/assets/logo.png" alt="مجوهرات الملوك" class="footer-logo" />
         <p>الأناقة التي تليق بكم منذ عام ١٩٨٥. حكايات من الذهب والألماس تروى بكل فخر وانتماء.</p>
       </div>
       <div class="footer-links">
@@ -41,10 +41,12 @@
   margin-bottom: 40px;
 }
 
-.footer-brand h3 {
-  font-size: 2rem;
+.footer-logo {
+  height: 60px;
+  width: auto;
+  object-fit: contain;
   margin-bottom: 1.5rem;
-  color: var(--gold-light);
+  filter: brightness(0) invert(1); /* Make it white for dark background */
 }
 
 .footer-brand p {

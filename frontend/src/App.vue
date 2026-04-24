@@ -1,7 +1,5 @@
 <script setup>
 import Navbar from './components/Navbar.vue'
-import HeroSection from './components/HeroSection.vue'
-import CollectionSection from './components/CollectionSection.vue'
 import Footer from './components/Footer.vue'
 </script>
 
@@ -9,8 +7,7 @@ import Footer from './components/Footer.vue'
   <div class="app-container">
     <Navbar />
     <main>
-      <HeroSection />
-      <CollectionSection />
+      <router-view></router-view>
     </main>
     <Footer />
   </div>

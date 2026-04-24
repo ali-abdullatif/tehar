@@ -6,14 +6,17 @@
         <p>نخبة من أجود المصاغ المرصع بأنقى الأحجار الكريمة</p>
       </div>
       
-      <div class="grid-layout">
-        <div v-for="i in 4" :key="i" class="jewelry-card glass-morphism">
-          <div class="card-image-placeholder">
-            <span class="icon">✨</span>
+      <div v-if="loading" style="text-align: center; color: white;">جاري التحميل...</div>
+      <div v-else-if="items.length === 0" style="text-align: center; color: white;">لا توجد قطع حالياً.</div>
+
+      <div v-else class="grid-layout">
+        <div v-for="item in items" :key="item.id" class="jewelry-card glass-morphism">
+          <div class="card-image-placeholder" :style="item.image_url ? `background-image: url(${item.image_url}); background-size: cover; background-position: center;` : ''">
+            <span v-if="!item.image_url" class="icon">✨</span>
           </div>
           <div class="card-content">
-            <h4>خاتم ملكي عيار ٢١</h4>
-            <p class="price">٥,٤٠٠ ر.س</p>
+            <h4>{{ item.name }}</h4>
+            <p class="price">{{ item.price }} ر.س</p>
             <button class="view-btn">عرض التفاصيل</button>
           </div>
         </div>
@@ -21,6 +24,28 @@
     </div>
   </section>
 </template>
+
+<script setup>
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+
+const API_URL = 'http://localhost:8000';
+const items = ref([]);
+const loading = ref(true);
+
+const fetchItems = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/items`);
+    items.value = response.data;
+  } catch (error) {
+    console.error('Error fetching items:', error);
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(fetchItems);
+</script>
 
 <style scoped>
 .section-padding {

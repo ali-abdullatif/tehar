@@ -4,3 +4,7 @@ dist
 .vscode
 *.log
 .DS_Store
+node_modules
+backend/venv
+frontend/node_modules
+.env

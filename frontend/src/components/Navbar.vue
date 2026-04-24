@@ -12,7 +12,7 @@ const toggleMenu = () => {
   <nav class="navbar glass-morphism" :class="{ 'menu-open': isMenuOpen }">
     <div class="container nav-content">
       <div class="logo">
-        <h1 class="gold-gradient">مجوهرات الملوك</h1>
+        <img src="@/assets/logo.png" alt="مجوهرات الملوك" class="nav-logo" />
       </div>
       
       <!-- Desktop Links -->
@@ -65,10 +65,11 @@ const toggleMenu = () => {
   align-items: center;
 }
 
-.logo h1 {
-  font-size: 1.8rem;
-  margin: 0;
-  color: var(--emerald-deep);
+.nav-logo {
+  height: 45px;
+  width: auto;
+  object-fit: contain;
+  /* Natural emerald color for the light navbar */
 }
 
 .nav-links {
