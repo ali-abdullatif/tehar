@@ -1,0 +1,100 @@
+<template>
+  <footer class="footer glass-morphism">
+    <div class="container footer-content">
+      <div class="footer-brand">
+        <h3 class="gold-gradient">مجوهرات الملوك</h3>
+        <p>الأناقة التي تليق بكم منذ عام ١٩٨٥. حكايات من الذهب والألماس تروى بكل فخر وانتماء.</p>
+      </div>
+      <div class="footer-links">
+        <h4>روابط سريعة</h4>
+        <ul>
+          <li><a href="#">سياسة الخصوصية</a></li>
+          <li><a href="#">الشروط والأحكام</a></li>
+          <li><a href="#">الأسئلة الشائعة</a></li>
+        </ul>
+      </div>
+      <div class="footer-contact">
+        <h4>تواصل معنا</h4>
+        <p>الرياض، المملكة العربية السعودية</p>
+        <p>هاتف: ٩٦٦٥٠٠٠٠٠٠٠٠+</p>
+        <p>البريد: info@kingsjewelry.sa</p>
+      </div>
+    </div>
+    <div class="copyright">
+      <p>&copy; ٢٠٢٦ مجوهرات الملوك. جميع الحقوق محفوظة.</p>
+    </div>
+  </footer>
+</template>
+
+<style scoped>
+.footer {
+  margin-top: auto;
+  padding: 60px 0 20px;
+  background: var(--emerald-deep);
+  color: var(--text-white);
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 4rem;
+  margin-bottom: 40px;
+}
+
+.footer-brand h3 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: var(--gold-light);
+}
+
+.footer-brand p {
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 400px;
+}
+
+.footer-links h4, .footer-contact h4 {
+  color: var(--gold-light);
+  margin-bottom: 1.5rem;
+  font-family: var(--font-sans);
+}
+
+.footer-links ul {
+  list-style: none;
+}
+
+.footer-links li {
+  margin-bottom: 0.8rem;
+}
+
+.footer-links a {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.footer-links a:hover {
+  color: var(--gold-primary);
+}
+
+.footer-contact p {
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 0.8rem;
+}
+
+.copyright {
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 20px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    text-align: center;
+  }
+  .footer-brand p {
+    margin: 0 auto;
+  }
+}
+</style>

@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Inter:wght@300;400;600&display=swap');
+
+:root {
+  --bg-primary: #FFFFFF;
+  --bg-soft: #F9FAF9;
+  --emerald-deep: #0C3E2A;
+  --emerald-light: #165E42;
+  --gold-primary: #C5A059;
+  --gold-light: #F1E4C1;
+  --gold-dark: #8E6D2F;
+  --text-main: #1A2E25;
+  --text-muted: #5C7167;
+  --text-white: #FFFFFF;
+  --font-serif: 'Amiri', serif;
+  --font-calligraphy: 'Aref Ruqaa', serif;
+  --font-sans: 'Inter', sans-serif;
+  --golden-ratio: 1.618;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  line-height: 1.6;
+  overflow-x: hidden;
+  direction: rtl;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-calligraphy);
+  color: var(--emerald-deep);
+  line-height: var(--golden-ratio);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+}
+
+.gold-gradient {
+  background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold-primary) 50%, var(--gold-light) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-border {
+  border: 1px solid var(--gold-primary);
+  border-image: linear-gradient(to right, var(--gold-dark), var(--gold-light), var(--gold-dark)) 1;
+}
+
+.silk-texture {
+  background: radial-gradient(circle, rgba(12, 62, 42, 0.05) 0%, rgba(255, 255, 255, 1) 100%);
+  background-blend-mode: overlay;
+}
+
+.glass-morphism {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(12, 62, 42, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(12, 62, 42, 0.05);
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1.5rem;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 1.2s ease forwards;
+}
