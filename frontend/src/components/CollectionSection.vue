@@ -9,15 +9,20 @@
       <div v-if="loading" style="text-align: center; color: white;">جاري التحميل...</div>
       <div v-else-if="items.length === 0" style="text-align: center; color: white;">لا توجد قطع حالياً.</div>
 
-      <div v-else class="grid-layout">
-        <div v-for="item in items" :key="item.id" class="jewelry-card glass-morphism">
-          <div class="card-image-placeholder" :style="item.image_url ? `background-image: url(${item.image_url}); background-size: cover; background-position: center;` : ''">
-            <span v-if="!item.image_url" class="icon">✨</span>
-          </div>
-          <div class="card-content">
-            <h4>{{ item.name }}</h4>
-            <p class="price">{{ item.price }} ر.س</p>
-            <button class="view-btn">عرض التفاصيل</button>
+      <div v-else class="collection-groups">
+        <div v-for="(group, catName) in groupedItems" :key="catName" class="category-section">
+          <h4 class="category-title">✦ {{ catName }}</h4>
+          <div class="grid-layout">
+            <div v-for="item in group" :key="item.id" class="jewelry-card glass-morphism">
+              <div class="card-image-placeholder" :style="item.image_url ? `background-image: url(${item.image_url}); background-size: cover; background-position: center;` : ''">
+                <span v-if="!item.image_url" class="icon">✨</span>
+              </div>
+              <div class="card-content">
+                <h5>{{ item.name }}</h5>
+                <p class="price">{{ item.price.toLocaleString('ar-SA') }} ر.س</p>
+                <button class="view-btn">عرض التفاصيل</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -26,7 +31,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 
 const API_URL = 'http://localhost:8000';
@@ -43,6 +48,16 @@ const fetchItems = async () => {
     loading.value = false;
   }
 };
+
+const groupedItems = computed(() => {
+  const groups = {};
+  items.value.forEach(item => {
+    const catName = item.category ? item.category.name : 'أقسام متنوعة';
+    if (!groups[catName]) groups[catName] = [];
+    groups[catName].push(item);
+  });
+  return groups;
+});
 
 onMounted(fetchItems);
 </script>
@@ -68,10 +83,29 @@ onMounted(fetchItems);
   color: var(--text-muted);
 }
 
+.collection-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 5rem;
+}
+
+.category-section {
+  position: relative;
+}
+
+.category-title {
+  font-family: var(--font-calligraphy);
+  font-size: 2.2rem;
+  color: var(--emerald-deep);
+  margin-bottom: 2.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(12, 62, 42, 0.08);
+}
+
 .grid-layout {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2.5rem;
 }
 
 .jewelry-card {

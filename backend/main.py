@@ -44,7 +44,25 @@ def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return crud.get_items(db, skip=skip, limit=limit)
 
 
+@app.get("/categories", response_model=List[schemas.Category])
+def read_categories(db: Session = Depends(get_db)):
+    return crud.get_categories(db)
+
+
 # --- Protected Endpoints (require JWT) ---
+
+@app.post("/categories", response_model=schemas.Category, dependencies=[Depends(verify_admin)])
+def create_category(category: schemas.CategoryCreate, db: Session = Depends(get_db)):
+    return crud.create_category(db, category)
+
+
+@app.delete("/categories/{category_id}", dependencies=[Depends(verify_admin)])
+def delete_category(category_id: int, db: Session = Depends(get_db)):
+    db_cat = crud.delete_category(db, category_id=category_id)
+    if db_cat is None:
+        raise HTTPException(status_code=404, detail="Category not found")
+    return {"message": "Category deleted"}
+
 
 @app.post("/upload", dependencies=[Depends(verify_admin)])
 async def upload_image(file: UploadFile = File(...)):

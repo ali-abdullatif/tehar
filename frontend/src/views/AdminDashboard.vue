@@ -26,10 +26,32 @@
             <div class="stat-label">إجمالي القطع</div>
           </div>
         </div>
+        <div class="stat-card glass-morphism">
+          <span class="stat-icon">📂</span>
+          <div>
+            <div class="stat-number">{{ categories.length }}</div>
+            <div class="stat-label">الأقسام</div>
+          </div>
+        </div>
       </div>
 
       <!-- Main Grid -->
       <div class="dashboard-grid">
+        
+        <!-- ── Category Management ── -->
+        <div class="panel glass-morphism category-panel">
+          <h3 class="panel-title">📂 إدارة الأقسام</h3>
+          <form @submit.prevent="addCategory" class="mini-form">
+            <input v-model="newCategoryName" type="text" placeholder="اسم القسم الجديد..." required />
+            <button type="submit" class="mini-submit-btn">إضافة</button>
+          </form>
+          <div class="category-list">
+            <div v-for="cat in categories" :key="cat.id" class="category-tag">
+              <span>{{ cat.name }}</span>
+              <button @click="deleteCategory(cat.id)" class="tag-delete">✕</button>
+            </div>
+          </div>
+        </div>
 
         <!-- ── Add Item Form ── -->
         <div class="panel glass-morphism">
@@ -44,6 +66,16 @@
             <div class="form-group">
               <label>السعر (ر.س)</label>
               <input v-model.number="newItem.price" type="number" step="0.01" required placeholder="0.00" />
+            </div>
+
+            <div class="form-group">
+              <label>القسم</label>
+              <select v-model="newItem.category_id" class="custom-select">
+                <option :value="null">بدون قسم</option>
+                <option v-for="cat in categories" :key="cat.id" :value="cat.id">
+                  {{ cat.name }}
+                </option>
+              </select>
             </div>
 
             <div class="form-group">
@@ -123,7 +155,10 @@
                 </div>
                 <div class="item-info">
                   <div class="item-name">{{ item.name }}</div>
-                  <div class="item-price">{{ item.price.toLocaleString('ar-SA') }} ر.س</div>
+                  <div class="item-price">
+                    {{ item.price.toLocaleString('ar-SA') }} ر.س
+                    <span v-if="item.category" class="item-cat-badge">{{ item.category.name }}</span>
+                  </div>
                 </div>
                 <div class="item-actions">
                   <button @click="editItem(item)" class="edit-btn" title="تعديل">✏️</button>
@@ -152,6 +187,15 @@
               <div class="form-group">
                 <label>السعر (ر.س)</label>
                 <input v-model.number="editingItem.price" type="number" step="0.01" required />
+              </div>
+              <div class="form-group">
+                <label>القسم</label>
+                <select v-model="editingItem.category_id" class="custom-select">
+                  <option :value="null">بدون قسم</option>
+                  <option v-for="cat in categories" :key="cat.id" :value="cat.id">
+                    {{ cat.name }}
+                  </option>
+                </select>
               </div>
               <div class="form-group">
                 <label>الوصف</label>
@@ -216,6 +260,7 @@ const router = useRouter();
 
 // Reactive state
 const items = ref([]);
+const categories = ref([]);
 const loading = ref(false);
 const fetchLoading = ref(true);
 const uploadProgress = ref(0);
@@ -224,7 +269,8 @@ const selectedFile = ref(null);
 const isDragging = ref(false);
 const fileInput = ref(null);
 
-const newItem = ref({ name: '', price: null, description: '' });
+const newItem = ref({ name: '', price: null, description: '', category_id: null });
+const newCategoryName = ref('');
 
 // Edit state
 const editingItem = ref(null);
@@ -249,6 +295,38 @@ const fetchItems = async () => {
     console.error('Error fetching items:', e);
   } finally {
     fetchLoading.value = false;
+  }
+};
+
+const fetchCategories = async () => {
+  try {
+    const res = await axios.get(`${API_URL}/categories`);
+    categories.value = res.data;
+  } catch (e) {
+    console.error('Error fetching categories:', e);
+  }
+};
+
+// Category Management
+const addCategory = async () => {
+  if (!newCategoryName.value.trim()) return;
+  try {
+    await axios.post(`${API_URL}/categories`, { name: newCategoryName.value }, authHeader());
+    newCategoryName.value = '';
+    await fetchCategories();
+  } catch (e) {
+    console.error('Error adding category:', e);
+  }
+};
+
+const deleteCategory = async (id) => {
+  if (!confirm('سيتم حذف القسم فقط، القطع ستبقى بدون قسم. هل أنت متأكد؟')) return;
+  try {
+    await axios.delete(`${API_URL}/categories/${id}`, authHeader());
+    await fetchCategories();
+    await fetchItems(); // Refresh items to update categories display
+  } catch (e) {
+    console.error('Error deleting category:', e);
   }
 };
 
@@ -314,7 +392,7 @@ const addItem = async () => {
     );
 
     // 3. Reset form
-    newItem.value = { name: '', price: null, description: '' };
+    newItem.value = { name: '', price: null, description: '', category_id: null };
     clearImage();
     await fetchItems();
   } catch (e) {
@@ -405,6 +483,7 @@ const updateItem = async () => {
         name: editingItem.value.name,
         price: editingItem.value.price,
         description: editingItem.value.description || '',
+        category_id: editingItem.value.category_id,
         image_url: imageUrl || ''
       },
       authHeader()
@@ -425,7 +504,10 @@ const logout = () => {
   router.push('/admin/login');
 };
 
-onMounted(fetchItems);
+onMounted(async () => {
+  await fetchCategories();
+  await fetchItems();
+});
 </script>
 
 <style scoped>
@@ -511,8 +593,13 @@ h1 { font-size: 1.8rem; margin: 0; }
 /* Grid */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 280px 1fr 1fr;
   gap: 1.5rem;
+}
+
+@media (max-width: 1200px) {
+  .dashboard-grid { grid-template-columns: 1fr 1fr; }
+  .category-panel { grid-column: span 2; }
 }
 
 .panel {
@@ -520,6 +607,85 @@ h1 { font-size: 1.8rem; margin: 0; }
   border-radius: 16px;
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(212,175,55,0.1);
+}
+
+.category-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.mini-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.mini-form input {
+  padding: 0.6rem;
+  font-size: 0.85rem;
+  flex: 1;
+}
+
+.mini-submit-btn {
+  background: #d4af37;
+  color: #0c3e2a;
+  border: none;
+  border-radius: 6px;
+  padding: 0 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.category-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.category-tag {
+  background: rgba(212,175,55,0.1);
+  border: 1px solid rgba(212,175,55,0.2);
+  color: #d4af37;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tag-delete {
+  background: none;
+  border: none;
+  color: #ff8585;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.8rem;
+}
+
+.custom-select {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  background: rgba(10, 30, 20, 0.7);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: #f0ebe0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d4af37' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: left 1rem center;
+  background-size: 1em;
+}
+
+.item-cat-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  background: rgba(212,175,55,0.1);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  margin-right: 0.5rem;
 }
 
 .panel-title {

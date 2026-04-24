@@ -1,6 +1,25 @@
 from sqlalchemy.orm import Session
 import models, schemas
 
+# Categories
+def get_categories(db: Session):
+    return db.query(models.ItemCategory).all()
+
+def create_category(db: Session, category: schemas.CategoryCreate):
+    db_cat = models.ItemCategory(name=category.name)
+    db.add(db_cat)
+    db.commit()
+    db.refresh(db_cat)
+    return db_cat
+
+def delete_category(db: Session, category_id: int):
+    db_cat = db.query(models.ItemCategory).filter(models.ItemCategory.id == category_id).first()
+    if db_cat:
+        db.delete(db_cat)
+        db.commit()
+    return db_cat
+
+# Items
 def get_items(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.JewelryItem).offset(skip).limit(limit).all()
 
