@@ -1,7 +1,7 @@
 import { reactive } from 'vue';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000';
+const API_URL = 'http://192.168.43.239:8000';
 
 export const siteConfig = reactive({
   hero_title: 'مجوهرات الملوك',

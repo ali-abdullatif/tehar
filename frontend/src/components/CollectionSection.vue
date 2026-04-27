@@ -22,7 +22,7 @@
               </div>
               <div class="card-content">
                 <h5>{{ item.name }}</h5>
-                <p class="price">{{ item.price.toLocaleString('ar-SA') }} ر.س</p>
+                <p class="price">{{ item.price.toLocaleString('ar-SA') }} ر.ي</p>
                 <div class="card-actions">
                   <button @click.stop="cartState.addItem(item)" class="add-cart-btn">
                     إضافة للحقيبة 🛒
@@ -43,7 +43,7 @@ import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import { cartState } from '@/store/cartStore';
 
-const API_URL = 'http://localhost:8000';
+const API_URL = 'http://192.168.43.239:8000';
 const items = ref([]);
 const loading = ref(true);
 

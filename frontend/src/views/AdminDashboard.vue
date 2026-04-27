@@ -98,7 +98,7 @@
                 <input v-model="newItem.name" type="text" required placeholder="مثال: خاتم زمرد ملكي" />
               </div>
               <div class="form-group">
-                <label>السعر (ر.س)</label>
+                <label>السعر (ر.ي)</label>
                 <input v-model.number="newItem.price" type="number" step="0.01" required placeholder="0.00" />
               </div>
               <div class="form-group">
@@ -120,6 +120,22 @@
                 </div>
                 <input ref="fileInput" type="file" accept="image/*" style="display:none" @change="handleFileSelect" />
               </div>
+
+              <!-- Gallery Images -->
+              <div class="form-group">
+                <label>صور المجموعة (اختياري)</label>
+                <div class="gallery-upload-grid">
+                  <div v-for="(img, idx) in newItem.gallery_images" :key="idx" class="gallery-thumb">
+                    <img :src="img" />
+                    <button type="button" @click="newItem.gallery_images.splice(idx, 1)" class="thumb-remove">✕</button>
+                  </div>
+                  <button type="button" class="add-gallery-btn" @click="$refs.galleryInput.click()" :disabled="galleryLoading">
+                    <span v-if="galleryLoading" class="spinner-small"></span>
+                    <span v-else>+</span>
+                  </button>
+                </div>
+                <input ref="galleryInput" type="file" accept="image/*" style="display:none" @change="handleGalleryUpload" />
+              </div>
               <button type="submit" class="submit-btn" :disabled="loading">✦ إضافة إلى المجموعة</button>
             </form>
           </div>
@@ -133,7 +149,7 @@
                 <div class="item-img-wrap"><img v-if="item.image_url" :src="item.image_url" class="item-thumb" /></div>
                 <div class="item-info">
                   <div class="item-name">{{ item.name }}</div>
-                  <div class="item-price">{{ item.price.toLocaleString('ar-SA') }} ر.س</div>
+                  <div class="item-price">{{ item.price.toLocaleString('ar-SA') }} ر.ي</div>
                 </div>
                 <div class="item-actions">
                   <button @click="editItem(item)" class="edit-btn">✏️</button>
@@ -151,7 +167,7 @@
             <h3 class="panel-title">📂 إدارة الأقسام</h3>
             <p class="panel-desc">أضف أقساماً جديدة لتنظيم مجموعتك الملكية</p>
             <form @submit.prevent="addCategory" class="mini-form">
-              <input v-model="newCategoryName" type="text" placeholder="اسم القسم الجديد..." required />
+              <input v-model="newCategoryName" type="text" placeholder="اسم القسم الجديد..." required class="luxury-input-gold" />
               <button type="submit" class="mini-submit-btn">إضافة قسم جديد</button>
             </form>
             <div class="category-list-large">
@@ -237,7 +253,7 @@
                 <input v-model="editingItem.name" type="text" required />
               </div>
               <div class="form-group">
-                <label>السعر (ر.س)</label>
+                <label>السعر (ر.ي)</label>
                 <input v-model.number="editingItem.price" type="number" step="0.01" required />
               </div>
               <div class="form-group">
@@ -309,7 +325,7 @@ import axios from 'axios';
 import { siteConfig } from '@/store/siteStore';
 import AnalyticsCharts from '@/components/AnalyticsCharts.vue';
 
-const API_URL = 'http://localhost:8000';
+const API_URL = 'http://192.168.43.239:8000';
 const router = useRouter();
 
 // Reactive state
@@ -323,6 +339,7 @@ const imagePreview = ref(null);
 const selectedFile = ref(null);
 const isDragging = ref(false);
 const fileInput = ref(null);
+const galleryInput = ref(null);
 
 const newItem = ref({ name: '', price: null, description: '', category_id: null, gallery_images: [] });
 const newCategoryName = ref('');
@@ -824,17 +841,29 @@ label {
   font-size: 0.9rem;
 }
 
-input, textarea {
+input, textarea, .custom-select {
   width: 100%;
   padding: 0.8rem 1rem;
-  background: rgba(10, 30, 20, 0.7);
-  border: 1px solid rgba(255,255,255,0.12);
-  color: #f0ebe0;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(212, 175, 55, 0.2);
   border-radius: 8px;
-  font-size: 0.95rem;
-  transition: border-color 0.3s ease;
-  box-sizing: border-box;
+  color: #1a2e25;
+  outline: none;
+  transition: all 0.2s;
 }
+
+.luxury-input-gold {
+  background: #fffcf0 !important;
+  border: 2px solid #d4af37 !important;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.1);
+  color: #0c3e2a !important;
+  font-weight: 600;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #888888;
+}
+
 input:focus, textarea:focus {
   outline: none;
   border-color: #d4af37;
@@ -1133,12 +1162,12 @@ input:-webkit-autofill:focus {
 
 .tab-btn.active {
   background: var(--gold-primary);
-  color: #0c3e2a;
+  color: #ffffff;
   box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
 }
 
 .tab-btn.active svg {
-  color: #0c3e2a;
+  color: #ffffff;
   opacity: 1;
 }
 
@@ -1176,6 +1205,8 @@ input:-webkit-autofill:focus {
   border-radius: 12px;
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(212,175,55,0.1);
+  color: var(--emerald-deep);
+  font-weight: 600;
 }
 
 /* Site Config Large */

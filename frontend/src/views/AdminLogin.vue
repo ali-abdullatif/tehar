@@ -72,7 +72,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000';
+const API_URL = 'http://192.168.43.239:8000';
 const router = useRouter();
 
 const username = ref('');
@@ -240,15 +240,19 @@ h1 {
 
 .input-wrapper input {
   width: 100%;
-  padding: 0.9rem 3rem 0.9rem 3rem;
-  background: rgba(10, 30, 20, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0.9rem 3rem 0.9rem 1rem;
+  background: #ffffff;
+  border: 1px solid #cccccc;
   border-radius: 10px;
-  color: #f0ebe0;
+  color: #000000;
   font-size: 1rem;
   transition: all 0.3s ease;
   direction: rtl;
   box-sizing: border-box;
+}
+
+.input-wrapper input::placeholder {
+  color: #888888;
 }
 
 /* Override browser autofill white background */

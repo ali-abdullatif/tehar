@@ -20,7 +20,7 @@ import { siteConfig } from '@/store/siteStore';
       <div class="footer-contact">
         <h4>تواصل معنا</h4>
         <p>{{ siteConfig.footer_address }}</p>
-        <p>واتساب: {{ siteConfig.footer_phone }}+</p>
+        <p>واتساب: <a :href="`https://wa.me/${siteConfig.footer_phone.replace(/\+/g, '').replace(/\s/g, '')}`" target="_blank" style="color: var(--gold-light); font-weight: 600;">{{ siteConfig.footer_phone }}+</a></p>
         <p>البريد: {{ siteConfig.footer_email }}</p>
       </div>
     </div>

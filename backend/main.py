@@ -12,8 +12,21 @@ import models, schemas, crud
 from database import engine, get_db
 from auth import router as auth_router, verify_admin
 
-# Create database tables on startup
-models.Base.metadata.create_all(bind=engine)
+import time
+
+# Create database tables with improved retry logic for container startup
+def init_db():
+    for i in range(12):
+        try:
+            models.Base.metadata.create_all(bind=engine)
+            print("Successfully connected to the database.")
+            return
+        except Exception as e:
+            print(f"Waiting for database... (Attempt {i+1}/12). Error: {e}")
+            time.sleep(3)
+    print("Failed to connect to database after several attempts.")
+
+init_db()
 
 # Ensure uploads directory exists
 UPLOAD_DIR = Path("/app/uploads")
@@ -22,9 +35,10 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 app = FastAPI(title="Jewelry API")
 
 # Configure CORS
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -32,7 +32,7 @@
               <div class="item-img" :style="item.image_url ? `background-image: url(${item.image_url})` : ''"></div>
               <div class="item-details">
                 <h4>{{ item.name }}</h4>
-                <p class="item-price">{{ (item.price * item.quantity).toLocaleString('ar-SA') }} ر.س</p>
+                <p class="item-price">{{ (item.price * item.quantity).toLocaleString('ar-SA') }} ر.ي</p>
                 <div class="qty-control">
                   <button @click="cartState.updateQuantity(item.id, -1)">-</button>
                   <span>{{ item.quantity }}</span>
@@ -50,7 +50,7 @@
           <div class="cart-footer">
             <div class="total-row">
               <span>الإجمالي:</span>
-              <span class="total-price">{{ totalAmount.toLocaleString('ar-SA') }} ر.س</span>
+              <span class="total-price">{{ totalAmount.toLocaleString('ar-SA') }} ر.ي</span>
             </div>
             <button @click="checkoutWhatsApp" class="checkout-btn">
               <span>طلب عبر واتساب</span>
@@ -69,6 +69,7 @@
 <script setup>
 import { computed } from 'vue';
 import { cartState, cartTotal } from '@/store/cartStore';
+import { siteConfig } from '@/store/siteStore';
 
 const totalAmount = computed(() => cartTotal());
 
@@ -76,14 +77,14 @@ const checkoutWhatsApp = () => {
   // Tracking PURCHASE
   cartState.checkoutTrack();
 
-  const phone = "966500000000"; // Replace with real phone
+  const phone = siteConfig.footer_phone.replace(/\+/g, '').replace(/\s/g, ''); 
   let message = "*طلب جديد من متجر مجوهرات الملوك*\n\n";
   
   cartState.items.forEach(item => {
-    message += `• ${item.name} (الكمية: ${item.quantity}) - ${item.price * item.quantity} ر.س\n`;
+    message += `• ${item.name} (الكمية: ${item.quantity}) - ${item.price * item.quantity} ر.ي\n`;
   });
   
-  message += `\n*الإجمالي: ${totalAmount.value} ر.س*`;
+  message += `\n*الإجمالي: ${totalAmount.value} ر.ي*`;
   
   const encoded = encodeURIComponent(message);
   window.open(`https://wa.me/${phone}?text=${encoded}`, '_blank');

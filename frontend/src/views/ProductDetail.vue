@@ -35,7 +35,7 @@
           <div class="product-header">
             <span v-if="product.category" class="cat-badge">{{ product.category.name }}</span>
             <h1 class="gold-gradient">{{ product.name }}</h1>
-            <p class="price-tag">{{ product.price.toLocaleString('ar-SA') }} ر.س</p>
+            <p class="price-tag">{{ product.price.toLocaleString('ar-SA') }} ر.ي</p>
           </div>
 
           <div class="description-box">
@@ -94,7 +94,7 @@ import axios from 'axios';
 import { cartState } from '@/store/cartStore';
 import { trackEvent } from '@/store/tracking';
 
-const API_URL = 'http://localhost:8000';
+const API_URL = 'http://192.168.43.239:8000';
 const route = useRoute();
 const product = ref(null);
 const loading = ref(true);
