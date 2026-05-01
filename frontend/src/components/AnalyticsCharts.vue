@@ -62,6 +62,39 @@
         </div>
 
       </div>
+      
+      <!-- Visitors Log Table -->
+      <div class="chart-card glass-morphism full-width">
+        <h3>👥 سجل الزوار الأخير</h3>
+        <div class="table-responsive">
+          <table class="luxury-table">
+            <thead>
+              <tr>
+                <th>الوقت</th>
+                <th>رقم الجلسة</th>
+                <th>نوع الحدث</th>
+                <th>التفاصيل</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="log in visitors" :key="log.id">
+                <td>{{ new Date(log.timestamp).toLocaleString('ar-SA') }}</td>
+                <td class="code-font" :title="log.session_id">{{ log.session_id.substring(0, 8) }}...</td>
+                <td>
+                  <span class="badge" :class="'badge-' + log.event_type">
+                    {{ formatEventType(log.event_type) }}
+                  </span>
+                </td>
+                <td>{{ log.product_name || '-' }}</td>
+              </tr>
+              <tr v-if="visitors.length === 0">
+                <td colspan="4" class="text-center">لا يوجد بيانات حتى الآن</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
     </div>
   </div>
 </template>
@@ -96,6 +129,7 @@ const stats = ref({
   conversion_funnel: { views: 0, add_to_cart: 0, purchase: 0 },
   cart_abandonment_rate: 0
 });
+const visitors = ref([]);
 const loading = ref(true);
 
 const conversionRate = computed(() => {
@@ -127,6 +161,12 @@ const fetchStats = async () => {
       headers: { Authorization: `Bearer ${token}` }
     });
     stats.value = res.data;
+    
+    // Fetch visitors log
+    const visitorsRes = await axios.get('/api/analytics/visitors?limit=50', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    visitors.value = visitorsRes.data;
   } catch (e) {
     console.error('Error fetching analytics:', e);
   } finally {
@@ -135,6 +175,16 @@ const fetchStats = async () => {
 };
 
 onMounted(fetchStats);
+
+const formatEventType = (type) => {
+  const map = {
+    'view': 'مشاهدة منتج',
+    'add_to_cart': 'إضافة للسلة',
+    'whatsapp_click': 'تواصل واتساب',
+    'purchase': 'شراء'
+  };
+  return map[type] || type;
+};
 
 // Chart Data Drivers
 const dailySalesData = computed(() => ({
@@ -231,6 +281,57 @@ const topProductsData = computed(() => ({
   justify-content: center;
   color: var(--gold-primary);
 }
+
+.full-width {
+  grid-column: 1 / -1;
+  height: auto;
+  min-height: 400px;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.luxury-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #fff;
+}
+
+.luxury-table th {
+  background: rgba(212, 175, 55, 0.1);
+  color: #d4af37;
+  padding: 1rem;
+  text-align: right;
+  font-weight: 600;
+  border-bottom: 2px solid rgba(212, 175, 55, 0.2);
+}
+
+.luxury-table td {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.luxury-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.code-font {
+  font-family: monospace;
+  color: #888;
+}
+
+.badge {
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.badge-view { background: rgba(255, 255, 255, 0.1); color: #ccc; }
+.badge-add_to_cart { background: rgba(212, 175, 55, 0.15); color: #d4af37; }
+.badge-purchase { background: rgba(37, 211, 102, 0.15); color: #25D366; }
+.badge-whatsapp_click { background: rgba(18, 140, 126, 0.2); color: #128C7E; }
 
 @media (max-width: 992px) {
   .charts-inner-grid { grid-template-columns: 1fr; }

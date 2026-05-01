@@ -234,6 +234,14 @@
                   <textarea v-model="siteConfig.whatsapp_message" @change="siteConfig.update('whatsapp_message', siteConfig.whatsapp_message)" rows="3" placeholder="أدخل الرسالة التي ستظهر في بداية طلب الواتساب..."></textarea>
                 </div>
               </div>
+              <div class="config-section full-width" style="margin-top: 2rem;">
+                <h4>💾 النسخ الاحتياطي</h4>
+                <p class="panel-desc">تحميل نسخة احتياطية من قاعدة البيانات والصور المرفوعة</p>
+                <button @click="handleExport" class="export-btn" :disabled="exporting">
+                  <span v-if="exporting" class="spinner-small"></span>
+                  <span v-else>تحميل نسخة احتياطية (Zip)</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -451,6 +459,29 @@ const uploadImageFile = async (file) => {
     headers: { ...authHeader().headers, 'Content-Type': 'multipart/form-data' },
   });
   return res.data.url;
+};
+
+const handleExport = async () => {
+  exporting.value = true;
+  try {
+    const token = localStorage.getItem('admin_token');
+    const response = await axios.get('/api/backup/export', {
+      headers: { Authorization: `Bearer ${token}` },
+      responseType: 'blob'
+    });
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'tihar_backup.zip');
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode.removeChild(link);
+  } catch (error) {
+    alert('حدث خطأ أثناء تصدير النسخة الاحتياطية');
+    console.error(error);
+  } finally {
+    exporting.value = false;
+  }
 };
 
 const handleHeroUpload = async (e) => {
@@ -1269,6 +1300,26 @@ input:-webkit-autofill:focus {
   color: var(--text-muted);
   text-align: center;
   padding: 2rem;
+}
+
+.export-btn {
+  background: linear-gradient(135deg, #0c3e2a 0%, #1a6645 100%);
+  color: white;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+.export-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+.export-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 @media (max-width: 992px) {

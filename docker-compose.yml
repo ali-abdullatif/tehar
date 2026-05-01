@@ -36,11 +36,12 @@ services:
       ADMIN_USERNAME: admin
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-change_this_admin_pass}
       SECRET_KEY: ${SECRET_KEY:-high_entropy_secret_key_882299}
-      BACKEND_PUBLIC_HOST: "http://tihar.site/api"
+      BACKEND_PUBLIC_HOST: "/api"
       ALLOWED_ORIGINS: "*"
     # Using local folder for image uploads persistence
     volumes:
       - ./uploads:/app/uploads
+      - ./db_data:/app/db_data:ro
     depends_on:
       - db
 

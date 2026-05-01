@@ -3,7 +3,11 @@ import uuid
 from pathlib import Path
 
 import hashlib
+import zipfile
+import tempfile
+import shutil
 from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Request
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
@@ -92,6 +96,41 @@ def track_event(event: schemas.EventCreate, request: Request, db: Session = Depe
 @app.get("/analytics/dashboard", response_model=schemas.AnalyticsDashboard, dependencies=[Depends(verify_admin)])
 def get_dashboard_data(db: Session = Depends(get_db)):
     return crud.get_analytics_dashboard(db)
+
+@app.get("/analytics/visitors", dependencies=[Depends(verify_admin)])
+def get_visitors_log(limit: int = 100, db: Session = Depends(get_db)):
+    logs = db.query(models.EventLog).order_by(models.EventLog.timestamp.desc()).limit(limit).all()
+    return logs
+
+@app.get("/backup/export", dependencies=[Depends(verify_admin)])
+def export_backup():
+    try:
+        # Create a temporary file for the zip archive
+        temp_dir = tempfile.mkdtemp()
+        zip_filename = os.path.join(temp_dir, "tihar_backup.zip")
+        
+        with zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            # Zip uploads
+            uploads_dir = "/app/uploads"
+            if os.path.exists(uploads_dir):
+                for root, _, files in os.walk(uploads_dir):
+                    for file in files:
+                        file_path = os.path.join(root, file)
+                        arcname = os.path.relpath(file_path, start="/app")
+                        zipf.write(file_path, arcname)
+            
+            # Zip db_data
+            db_data_dir = "/app/db_data"
+            if os.path.exists(db_data_dir):
+                for root, _, files in os.walk(db_data_dir):
+                    for file in files:
+                        file_path = os.path.join(root, file)
+                        arcname = os.path.relpath(file_path, start="/app")
+                        zipf.write(file_path, arcname)
+                        
+        return FileResponse(path=zip_filename, filename="tihar_backup.zip", media_type="application/zip")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Backup failed: {str(e)}")
 
 @app.get("/config", response_model=List[schemas.Config])
 def read_configs(db: Session = Depends(get_db)):
