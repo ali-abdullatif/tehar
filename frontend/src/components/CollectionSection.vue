@@ -43,7 +43,7 @@ import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import { cartState } from '@/store/cartStore';
 
-const API_URL = 'http://tihar.site:8000';
+const API_URL = '/api';
 const items = ref([]);
 const loading = ref(true);
 

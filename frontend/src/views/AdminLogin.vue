@@ -72,7 +72,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
-const API_URL = 'http://tihar.site:8000';
+const API_URL = '/api';
 const router = useRouter();
 
 const username = ref('');

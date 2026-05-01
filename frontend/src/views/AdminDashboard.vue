@@ -337,7 +337,7 @@ import axios from 'axios';
 import { siteConfig } from '@/store/siteStore';
 import AnalyticsCharts from '@/components/AnalyticsCharts.vue';
 
-const API_URL = 'http://tihar.site:8000';
+const API_URL = '/api';
 const router = useRouter();
 
 // Reactive state

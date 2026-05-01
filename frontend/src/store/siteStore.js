@@ -1,7 +1,7 @@
 import { reactive } from 'vue';
 import axios from 'axios';
 
-const API_URL = 'http://tihar.site:8000';
+const API_URL = '/api';
 
 export const siteConfig = reactive({
   hero_title: 'مجوهرات تيهار',

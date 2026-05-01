@@ -91,7 +91,7 @@ import { cartState } from '@/store/cartStore';
 import { siteConfig } from '@/store/siteStore';
 import { trackEvent } from '@/store/tracking';
 
-const API_URL = 'http://tihar.site:8000';
+const API_URL = '/api';
 const route = useRoute();
 const product = ref(null);
 const loading = ref(true);
