@@ -41,7 +41,7 @@ services:
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-change_this_admin_pass}
       SECRET_KEY: ${SECRET_KEY:-high_entropy_secret_key_882299}
       BACKEND_PUBLIC_HOST: "http://tihar.site:8000"
-      ALLOWED_ORIGINS: "http://tihar.site:8080,http://localhost:8080"
+      ALLOWED_ORIGINS: "http://tihar.site,http://localhost:8080,http://localhost"
     # Using local folder for image uploads persistence
     volumes:
       - ./uploads:/app/uploads
@@ -55,6 +55,6 @@ services:
     container_name: tihar-frontend
     restart: always
     ports:
-      - "8080:80"
+      - "80:80"
     depends_on:
       - api
