@@ -8,15 +8,14 @@ services:
       MYSQL_DATABASE: ahweb
       MYSQL_USER: user
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-prod_db_pass_77}
-    # REMOVED port 3306 for security in production
+    # Using local folder for absolute database persistence
     volumes:
-      - db_data:/var/lib/mysql
+      - ./db_data:/var/lib/mysql
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: ahweb-phpmyadmin
     restart: always
-    # Consider disabling phpMyAdmin in production or protecting it
     ports:
       - "8081:80"
     environment:
@@ -42,9 +41,10 @@ services:
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-change_this_admin_pass}
       SECRET_KEY: ${SECRET_KEY:-high_entropy_secret_key_882299}
       BACKEND_PUBLIC_HOST: "http://192.168.43.239:8000"
-      ALLOWED_ORIGINS: "http://192.168.43.239:8080,http://localhost:8080" # Add your domain here
+      ALLOWED_ORIGINS: "http://192.168.43.239:8080,http://localhost:8080"
+    # Using local folder for image uploads persistence
     volumes:
-      - uploads_data:/app/uploads
+      - ./uploads:/app/uploads
     depends_on:
       - db
 
@@ -58,7 +58,3 @@ services:
       - "8080:80"
     depends_on:
       - api
-
-volumes:
-  db_data:
-  uploads_data:

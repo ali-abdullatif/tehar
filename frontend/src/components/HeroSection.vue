@@ -1,26 +1,24 @@
 <template>
-  <section id="hero" class="hero fade-in">
+  <section 
+    id="hero" 
+    class="hero fade-in" 
+    :style="siteConfig.hero_image ? { backgroundImage: `url(${siteConfig.hero_image})` } : {}"
+    :class="{ 'has-bg': siteConfig.hero_image }"
+  >
+    <div class="hero-overlay" v-if="siteConfig.hero_image"></div>
     <div class="container hero-content">
       <div class="hero-text">
-        <h2 class="gold-gradient">{{ siteConfig.hero_title }}</h2>
+        <h2 class="hero-title">{{ siteConfig.hero_title }}</h2>
         <p class="subtitle">{{ siteConfig.hero_subtitle }}</p>
         <div class="cta-group">
           <button class="primary-btn" @click="scrollToCollection">اكتشف المجموعة</button>
           <button class="secondary-btn" @click="contactUs">تواصل معنا</button>
         </div>
       </div>
-      <div class="hero-image-container">
-        <div v-if="siteConfig.hero_image" class="hero-img-wrap">
-          <img :src="siteConfig.hero_image" alt="Hero" class="hero-main-img" />
-        </div>
-        <div v-else class="image-placeholder silk-texture">
-          <div class="placeholder-icon">💍</div>
-          <div class="image-caption">تصاميم ملكية فاخرة</div>
-        </div>
-      </div>
     </div>
   </section>
 </template>
+
 <script setup>
 import { siteConfig } from '@/store/siteStore';
 
@@ -35,58 +33,64 @@ const contactUs = () => {
 
 <style scoped>
 .hero {
-  min-height: 100vh;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1698 / 624;
+  min-height: 480px; /* minimum height to ensure content fits on smaller screens */
   display: flex;
   align-items: center;
-  padding: 120px 0 60px;
+  padding: 2rem 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: var(--bg-soft);
+  overflow: hidden;
+}
+
+.hero.has-bg {
+  /* Ensuring background behaves for premium feel */
+  background-attachment: fixed; 
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to left,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  z-index: 1;
 }
 
 .hero-content {
-  display: flex;
-  align-items: center;
-  gap: 4rem;
+  position: relative;
+  z-index: 2;
   width: 100%;
 }
 
 .hero-text {
-  flex: 38;
+  max-width: 600px;
   text-align: right;
 }
 
-.hero-image-container {
-  flex: 62;
-  height: 500px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.hero-img-wrap {
-  width: 100%;
-  height: 100%;
-  border-radius: 4px;
-  overflow: hidden;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.4);
-  border: 1px solid rgba(212,175,55,0.2);
-}
-
-.hero-main-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.hero-text h2 {
-  font-size: clamp(2.5rem, 5vw, 4rem);
+.hero-text .hero-title {
+  font-size: clamp(3rem, 6vw, 4.5rem);
   margin-bottom: 1.5rem;
-  line-height: 1.2;
+  line-height: 1.1;
+  font-weight: 700;
+  color: var(--emerald-deep);
 }
 
 .hero-text .subtitle {
-  font-size: clamp(1rem, 2vw, 1.4rem);
-  color: var(--text-muted);
-  margin-bottom: 2.5rem;
-  font-weight: 300;
+  font-size: clamp(1.1rem, 2vw, 1.6rem);
+  color: var(--emerald-deep);
+  margin-bottom: 3rem;
+  font-weight: 400;
+  line-height: 1.6;
 }
 
 .cta-group {
@@ -95,12 +99,12 @@ const contactUs = () => {
 }
 
 .primary-btn, .secondary-btn {
-  padding: 1rem 2rem;
+  padding: 1.2rem 2.8rem;
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
-  border-radius: 2px;
-  transition: all 0.3s ease;
+  border-radius: 4px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   white-space: nowrap;
 }
 
@@ -108,89 +112,61 @@ const contactUs = () => {
   background: var(--emerald-deep);
   color: var(--text-white);
   border: none;
+  box-shadow: 0 10px 30px rgba(12, 62, 42, 0.2);
 }
 
 .primary-btn:hover {
   background: var(--emerald-light);
-  box-shadow: 0 10px 20px rgba(12, 62, 42, 0.15);
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(12, 62, 42, 0.3);
 }
 
 .secondary-btn {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
   color: var(--emerald-deep);
   border: 1px solid var(--emerald-deep);
 }
 
 .secondary-btn:hover {
-  background: rgba(12, 62, 42, 0.05);
+  background: var(--emerald-deep);
+  color: white;
+  transform: translateY(-5px);
 }
 
-.image-placeholder {
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.05);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  border: 1px solid rgba(197, 160, 89, 0.3);
-  position: relative;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-}
+@media (max-width: 768px) {
+  .hero {
+    aspect-ratio: auto;
+    min-height: 100vh;
+    padding: 100px 1rem 60px;
+    background-position: center center;
+  }
 
-.placeholder-icon {
-  font-size: 6rem;
-  margin-bottom: 1rem;
-}
-
-.image-caption {
-  font-family: var(--font-calligraphy);
-  color: var(--gold-light);
-  font-size: 1.1rem;
-}
-
-@media (max-width: 1024px) {
-  .hero-content {
-    flex-direction: column-reverse;
-    gap: 3rem;
+  .hero-overlay {
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(255, 255, 255, 0.7) 100%
+    );
   }
   
   .hero-text {
-    flex: 1;
+    max-width: 100%;
     text-align: center;
   }
   
-  .hero-image-container {
-    flex: 1;
-    width: 100%;
-    height: 400px;
+  .hero-text h2 {
+    font-size: 2.5rem;
   }
   
   .cta-group {
     justify-content: center;
-  }
-}
-
-@media (max-width: 480px) {
-  .hero {
-    padding-top: 100px;
-  }
-  
-  .hero-text h2 {
-    font-size: 2.2rem;
-  }
-  
-  .cta-group {
     flex-direction: column;
-    width: 100%;
+    gap: 1rem;
   }
-  
+
   .primary-btn, .secondary-btn {
     width: 100%;
-  }
-  
-  .hero-image-container {
-    height: 300px;
   }
 }
 </style>
