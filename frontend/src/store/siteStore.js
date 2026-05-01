@@ -1,18 +1,19 @@
 import { reactive } from 'vue';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.43.239:8000';
+const API_URL = 'http://tihar.site:8000';
 
 export const siteConfig = reactive({
-  hero_title: 'مجوهرات الملوك',
+  hero_title: 'مجوهرات تيهار',
   hero_subtitle: 'الأناقة التي تليق بكم. حكايات من الذهب والألماس تروى بكل فخر وانتماء.',
   hero_image: '', // Primary hero background
   footer_address: 'جدة، المملكة العربية السعودية',
   footer_email: 'info@kingsjewelry.com',
   footer_phone: '966500000000',
-  
+  whatsapp_message: '*طلب جديد من متجر مجوهرات تيهار*\n\n',
+
   loading: true,
-  
+
   async fetch() {
     this.loading = true;
     try {
@@ -28,7 +29,7 @@ export const siteConfig = reactive({
       this.loading = false;
     }
   },
-  
+
   async update(key, value) {
     try {
       const token = localStorage.getItem('admin_token');

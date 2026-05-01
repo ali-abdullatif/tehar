@@ -1,26 +1,18 @@
-<script setup>
-import { ref } from 'vue'
-import { cartState, cartCount } from '@/store/cartStore'
-
-const isMenuOpen = ref(false)
-
-const toggleMenu = () => {
-  isMenuOpen.value = !isMenuOpen.value
-}
-</script>
 
 <template>
   <nav class="navbar glass-morphism" :class="{ 'menu-open': isMenuOpen }">
     <div class="container nav-content">
       <div class="logo">
-        <img src="@/assets/logo.png" alt="مجوهرات الملوك" class="nav-logo" />
+        <router-link to="/">
+          <img src="@/assets/logo.png" alt="مجوهرات تيهار" class="nav-logo" />
+        </router-link>
       </div>
       
       <!-- Desktop Links -->
       <ul class="nav-links desktop-only">
-        <li><a href="#hero">الرئيسية</a></li>
-        <li><a href="#collection">المجموعات</a></li>
-        <li><a href="#contact">اتصل بنا</a></li>
+        <li><a @click.prevent="scrollTo('#hero')" href="#">الرئيسية</a></li>
+        <li><a @click.prevent="scrollTo('#collection')" href="#">المجموعات</a></li>
+        <li><a @click.prevent="scrollTo('#contact')" href="#">اتصل بنا</a></li>
       </ul>
 
       <!-- Cart & Mobile Toggle -->
@@ -43,13 +35,43 @@ const toggleMenu = () => {
     <!-- Mobile Menu Overlay -->
     <div class="mobile-menu" :class="{ 'active': isMenuOpen }">
       <ul class="mobile-nav-links">
-        <li><a href="#hero" @click="toggleMenu">الرئيسية</a></li>
-        <li><a href="#collection" @click="toggleMenu">المجموعات</a></li>
-        <li><a href="#contact" @click="toggleMenu">اتصل بنا</a></li>
+        <li><a @click.prevent="scrollTo('#hero')" href="#">الرئيسية</a></li>
+        <li><a @click.prevent="scrollTo('#collection')" href="#">المجموعات</a></li>
+        <li><a @click.prevent="scrollTo('#contact')" href="#">اتصل بنا</a></li>
       </ul>
     </div>
   </nav>
 </template>
+
+<script setup>
+import { ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { cartState, cartCount } from '@/store/cartStore'
+
+const isMenuOpen = ref(false)
+const router = useRouter()
+const route = useRoute()
+
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value
+}
+
+const scrollTo = (hash) => {
+  if (isMenuOpen.value) isMenuOpen.value = false;
+  
+  if (route.path !== '/') {
+    router.push({ path: '/' }).then(() => {
+      setTimeout(() => {
+        const el = document.querySelector(hash);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    });
+  } else {
+    const el = document.querySelector(hash);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+</script>
 
 <style scoped>
 .navbar {

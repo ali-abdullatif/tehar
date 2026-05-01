@@ -123,7 +123,7 @@ const horizontalBarOptions = {
 const fetchStats = async () => {
   try {
     const token = localStorage.getItem('admin_token');
-    const res = await axios.get('http://192.168.43.239:8000/analytics/dashboard', {
+    const res = await axios.get('http://tihar.site:8000/analytics/dashboard', {
       headers: { Authorization: `Bearer ${token}` }
     });
     stats.value = res.data;

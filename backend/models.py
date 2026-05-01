@@ -46,6 +46,7 @@ class JewelryItem(Base):
     __tablename__ = "items"
 
     id = Column(Integer, primary_key=True, index=True)
+    product_code = Column(String(50), unique=True, index=True, nullable=True)
     name = Column(String(255), index=True)
     description = Column(Text, nullable=True)
     price = Column(Float)

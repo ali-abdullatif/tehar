@@ -3,19 +3,13 @@ import { siteConfig } from '@/store/siteStore';
 </script>
 
 <template>
-  <footer class="footer glass-morphism">
+  <footer id="contact" class="footer glass-morphism">
     <div class="container footer-content">
       <div class="footer-brand">
-        <img src="@/assets/logo.png" alt="مجوهرات الملوك" class="footer-logo" />
+        <router-link to="/">
+          <img src="@/assets/logo.png" alt="مجوهرات تيهار" class="footer-logo" />
+        </router-link>
         <p>{{ siteConfig.hero_subtitle }}</p>
-      </div>
-      <div class="footer-links">
-        <h4>روابط سريعة</h4>
-        <ul>
-          <li><a href="#">سياسة الخصوصية</a></li>
-          <li><a href="#">الشروط والأحكام</a></li>
-          <li><a href="#">الأسئلة الشائعة</a></li>
-        </ul>
       </div>
       <div class="footer-contact">
         <h4>تواصل معنا</h4>
@@ -25,7 +19,7 @@ import { siteConfig } from '@/store/siteStore';
       </div>
     </div>
     <div class="copyright">
-      <p>&copy; ٢٠٢٦ مجوهرات الملوك. جميع الحقوق محفوظة.</p>
+      <p>&copy; ٢٠٢٦ مجوهرات تيهار. جميع الحقوق محفوظة.</p>
     </div>
   </footer>
 </template>

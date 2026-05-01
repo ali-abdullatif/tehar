@@ -138,16 +138,12 @@ const contactUs = () => {
   .hero {
     aspect-ratio: auto;
     min-height: 100vh;
-    padding: 100px 1rem 60px;
-    background-position: center center;
+    /* You can adjust the first number (25%) to move the image left/right. 0% is far left, 50% is center */
+    background-position: 30% 50%;
   }
 
   .hero-overlay {
-    background: linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.95) 0%,
-      rgba(255, 255, 255, 0.7) 100%
-    );
+    background: none;
   }
   
   .hero-text {

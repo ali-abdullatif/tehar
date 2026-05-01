@@ -2,7 +2,8 @@ import os
 import uuid
 from pathlib import Path
 
-from fastapi import FastAPI, Depends, HTTPException, UploadFile, File
+import hashlib
+from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
@@ -19,6 +20,12 @@ def init_db():
     for i in range(12):
         try:
             models.Base.metadata.create_all(bind=engine)
+            from sqlalchemy import text
+            with engine.begin() as conn:
+                try:
+                    conn.execute(text("ALTER TABLE items ADD COLUMN product_code VARCHAR(50) UNIQUE;"))
+                except Exception:
+                    pass
             print("Successfully connected to the database.")
             return
         except Exception as e:
@@ -68,7 +75,18 @@ def read_item(item_id: int, db: Session = Depends(get_db)):
 
 # Tracking & Analytics
 @app.post("/analytics/track")
-def track_event(event: schemas.EventCreate, db: Session = Depends(get_db)):
+def track_event(event: schemas.EventCreate, request: Request, db: Session = Depends(get_db)):
+    # Generate a unique ID using the user's IP and User Agent
+    forwarded_for = request.headers.get("x-forwarded-for")
+    client_ip = forwarded_for.split(",")[0] if forwarded_for else (request.client.host if request.client else "unknown_ip")
+    user_agent = request.headers.get("user-agent", "unknown_agent")
+    
+    fingerprint_str = f"{client_ip}-{user_agent}"
+    unique_id = hashlib.md5(fingerprint_str.encode()).hexdigest()
+    
+    # Override the frontend-provided session ID with the backend fingerprint
+    event.session_id = unique_id
+    
     return crud.log_event(db, event)
 
 @app.get("/analytics/dashboard", response_model=schemas.AnalyticsDashboard, dependencies=[Depends(verify_admin)])

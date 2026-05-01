@@ -98,6 +98,10 @@
                 <input v-model="newItem.name" type="text" required placeholder="مثال: خاتم زمرد ملكي" />
               </div>
               <div class="form-group">
+                <label>رمز القطعة (SKU)</label>
+                <input v-model="newItem.product_code" type="text" placeholder="مثال: RNG-123" />
+              </div>
+              <div class="form-group">
                 <label>السعر (ر.ي)</label>
                 <input v-model.number="newItem.price" type="number" step="0.01" required placeholder="0.00" />
               </div>
@@ -149,7 +153,7 @@
                 <div class="item-img-wrap"><img v-if="item.image_url" :src="item.image_url" class="item-thumb" /></div>
                 <div class="item-info">
                   <div class="item-name">{{ item.name }}</div>
-                  <div class="item-price">{{ item.price.toLocaleString('ar-SA') }} ر.ي</div>
+                  <div class="item-price">{{ item.price.toLocaleString('en-US') }} ر.ي</div>
                 </div>
                 <div class="item-actions">
                   <button @click="editItem(item)" class="edit-btn">✏️</button>
@@ -225,6 +229,10 @@
                     <input v-model="siteConfig.footer_phone" @change="siteConfig.update('footer_phone', siteConfig.footer_phone)" type="text" placeholder="966..." />
                   </div>
                 </div>
+                <div class="form-group" style="margin-top: 1.5rem;">
+                  <label>مقدمة رسالة الواتساب</label>
+                  <textarea v-model="siteConfig.whatsapp_message" @change="siteConfig.update('whatsapp_message', siteConfig.whatsapp_message)" rows="3" placeholder="أدخل الرسالة التي ستظهر في بداية طلب الواتساب..."></textarea>
+                </div>
               </div>
             </div>
           </div>
@@ -251,6 +259,10 @@
               <div class="form-group">
                 <label>اسم القطعة</label>
                 <input v-model="editingItem.name" type="text" required />
+              </div>
+              <div class="form-group">
+                <label>رمز القطعة (SKU)</label>
+                <input v-model="editingItem.product_code" type="text" />
               </div>
               <div class="form-group">
                 <label>السعر (ر.ي)</label>
@@ -325,7 +337,7 @@ import axios from 'axios';
 import { siteConfig } from '@/store/siteStore';
 import AnalyticsCharts from '@/components/AnalyticsCharts.vue';
 
-const API_URL = 'http://192.168.43.239:8000';
+const API_URL = 'http://tihar.site:8000';
 const router = useRouter();
 
 // Reactive state
@@ -341,7 +353,7 @@ const isDragging = ref(false);
 const fileInput = ref(null);
 const galleryInput = ref(null);
 
-const newItem = ref({ name: '', price: null, description: '', category_id: null, gallery_images: [] });
+const newItem = ref({ name: '', product_code: '', price: null, description: '', category_id: null, gallery_images: [] });
 const newCategoryName = ref('');
 const galleryLoading = ref(false);
 
@@ -497,7 +509,7 @@ const addItem = async () => {
     );
 
     // 3. Reset form
-    newItem.value = { name: '', price: null, description: '', category_id: null, gallery_images: [] };
+    newItem.value = { name: '', product_code: '', price: null, description: '', category_id: null, gallery_images: [] };
     clearImage();
     await fetchItems();
   } catch (e) {
@@ -589,6 +601,7 @@ const updateItem = async () => {
       `${API_URL}/items/${editingItem.value.id}`,
       {
         name: editingItem.value.name,
+        product_code: editingItem.value.product_code || null,
         price: editingItem.value.price,
         description: editingItem.value.description || '',
         category_id: editingItem.value.category_id,

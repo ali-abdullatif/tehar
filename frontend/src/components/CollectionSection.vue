@@ -22,7 +22,7 @@
               </div>
               <div class="card-content">
                 <h5>{{ item.name }}</h5>
-                <p class="price">{{ item.price.toLocaleString('ar-SA') }} ر.ي</p>
+                <p class="price">{{ item.price.toLocaleString('en-US') }} ر.ي</p>
                 <div class="card-actions">
                   <button @click.stop="cartState.addItem(item)" class="add-cart-btn">
                     إضافة للحقيبة 🛒
@@ -43,7 +43,7 @@ import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import { cartState } from '@/store/cartStore';
 
-const API_URL = 'http://192.168.43.239:8000';
+const API_URL = 'http://tihar.site:8000';
 const items = ref([]);
 const loading = ref(true);
 
@@ -112,12 +112,31 @@ onMounted(fetchItems);
 }
 
 .grid-layout {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  display: flex;
+  overflow-x: auto;
   gap: 2.5rem;
+  padding-bottom: 2rem; /* Space for the scrollbar */
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.grid-layout::-webkit-scrollbar {
+  height: 8px;
+}
+.grid-layout::-webkit-scrollbar-track {
+  background: rgba(12, 62, 42, 0.05);
+  border-radius: 4px;
+}
+.grid-layout::-webkit-scrollbar-thumb {
+  background: var(--emerald-deep);
+  border-radius: 4px;
 }
 
 .jewelry-card {
+  flex: 0 0 auto;
+  width: 300px;
+  scroll-snap-align: start;
   padding: 1.5rem;
   background: var(--bg-soft);
   transition: all 0.4s ease;
@@ -126,7 +145,7 @@ onMounted(fetchItems);
 }
 
 .jewelry-card:hover {
-  transform: translateY(-10px);
+  transform: translateY(-5px);
   border-color: var(--emerald-deep);
   box-shadow: 0 15px 30px rgba(12, 62, 42, 0.08);
 }

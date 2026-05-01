@@ -32,7 +32,7 @@
               <div class="item-img" :style="item.image_url ? `background-image: url(${item.image_url})` : ''"></div>
               <div class="item-details">
                 <h4>{{ item.name }}</h4>
-                <p class="item-price">{{ (item.price * item.quantity).toLocaleString('ar-SA') }} ر.ي</p>
+                <p class="item-price">{{ (item.price * item.quantity).toLocaleString('en-US') }} ر.ي</p>
                 <div class="qty-control">
                   <button @click="cartState.updateQuantity(item.id, -1)">-</button>
                   <span>{{ item.quantity }}</span>
@@ -50,7 +50,7 @@
           <div class="cart-footer">
             <div class="total-row">
               <span>الإجمالي:</span>
-              <span class="total-price">{{ totalAmount.toLocaleString('ar-SA') }} ر.ي</span>
+              <span class="total-price">{{ totalAmount.toLocaleString('en-US') }} ر.ي</span>
             </div>
             <button @click="checkoutWhatsApp" class="checkout-btn">
               <span>طلب عبر واتساب</span>
@@ -78,13 +78,18 @@ const checkoutWhatsApp = () => {
   cartState.checkoutTrack();
 
   const phone = siteConfig.footer_phone.replace(/\+/g, '').replace(/\s/g, ''); 
-  let message = "*طلب جديد من متجر مجوهرات الملوك*\n\n";
+  const shopName = siteConfig.hero_title || 'مجوهرات تيهار';
+  let message = `مرحبًا ${shopName} 👋\nعندي استفسار/طلب بخصوص:\n\n`;
   
   cartState.items.forEach(item => {
-    message += `• ${item.name} (الكمية: ${item.quantity}) - ${item.price * item.quantity} ر.ي\n`;
+    message += `المنتج: ${item.name}\n`;
+    if (item.product_code) message += `🔢 الكود: ${item.product_code}\n`;
+    message += `💰 السعر: ${item.price.toLocaleString('en-US')} ر.ي\n`;
+    if (item.quantity > 1) message += `📦 الكمية: ${item.quantity}\n`;
+    message += `📎 رابط المنتج: ${window.location.origin}/product/${item.id}\n\n`;
   });
   
-  message += `\n*الإجمالي: ${totalAmount.value} ر.ي*`;
+  message += `*الإجمالي: ${totalAmount.value.toLocaleString('en-US')} ر.ي*`;
   
   const encoded = encodeURIComponent(message);
   window.open(`https://wa.me/${phone}?text=${encoded}`, '_blank');

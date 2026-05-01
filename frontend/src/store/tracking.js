@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 
-const API_URL = 'http://192.168.43.239:8000';
+const API_URL = 'http://tihar.site:8000';
 
 const getSessionId = () => {
   let sessionId = localStorage.getItem('shop_session_id');

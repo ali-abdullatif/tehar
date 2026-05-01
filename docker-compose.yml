@@ -1,11 +1,11 @@
 services:
   db:
     image: mysql:8.0
-    container_name: ahweb-mysql
+    container_name: tihar-mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-prod_root_pass_99}
-      MYSQL_DATABASE: ahweb
+      MYSQL_DATABASE: tihar
       MYSQL_USER: user
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-prod_db_pass_77}
     # Using local folder for absolute database persistence
@@ -14,7 +14,7 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: ahweb-phpmyadmin
+    container_name: tihar-phpmyadmin
     restart: always
     ports:
       - "8081:80"
@@ -28,20 +28,20 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: ahweb-backend
+    container_name: tihar-backend
     restart: always
     ports:
       - "8000:8000"
     environment:
       MYSQL_HOST: db
-      MYSQL_DATABASE: ahweb
+      MYSQL_DATABASE: tihar
       MYSQL_USER: user
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-prod_db_pass_77}
       ADMIN_USERNAME: admin
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-change_this_admin_pass}
       SECRET_KEY: ${SECRET_KEY:-high_entropy_secret_key_882299}
-      BACKEND_PUBLIC_HOST: "http://192.168.43.239:8000"
-      ALLOWED_ORIGINS: "http://192.168.43.239:8080,http://localhost:8080"
+      BACKEND_PUBLIC_HOST: "http://tihar.site:8000"
+      ALLOWED_ORIGINS: "http://tihar.site:8080,http://localhost:8080"
     # Using local folder for image uploads persistence
     volumes:
       - ./uploads:/app/uploads
@@ -52,7 +52,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: ahweb-frontend
+    container_name: tihar-frontend
     restart: always
     ports:
       - "8080:80"

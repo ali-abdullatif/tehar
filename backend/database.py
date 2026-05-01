@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker
 MYSQL_USER = os.getenv("MYSQL_USER", "user")
 MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "password")
 MYSQL_HOST = os.getenv("MYSQL_HOST", "db")
-MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "ahweb")
+MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "tihar")
 
 SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}/{MYSQL_DATABASE}"
 

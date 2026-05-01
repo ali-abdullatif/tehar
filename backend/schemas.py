@@ -67,6 +67,7 @@ class ItemImage(ItemImageBase):
 
 # Item Schemas
 class ItemBase(BaseModel):
+    product_code: Optional[str] = None
     name: str
     description: Optional[str] = None
     price: float

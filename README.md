@@ -1,4 +1,4 @@
-# Al-Molook Jewelry E-Commerce Platform (مجوهرات الملوك)
+# Al-Molook Jewelry E-Commerce Platform (مجوهرات تيهار)
 
 A high-end, responsive Arabic jewelry web application featuring a modern "Golden Ratio" layout, luxury aesthetics, and a comprehensive management dashboard.
 
