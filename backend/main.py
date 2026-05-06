@@ -110,23 +110,21 @@ def export_backup():
         zip_filename = os.path.join(temp_dir, "tihar_backup.zip")
         
         with zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_DEFLATED) as zipf:
-            # Zip uploads
-            uploads_dir = "/app/uploads"
-            if os.path.exists(uploads_dir):
-                for root, _, files in os.walk(uploads_dir):
-                    for file in files:
-                        file_path = os.path.join(root, file)
-                        arcname = os.path.relpath(file_path, start="/app")
-                        zipf.write(file_path, arcname)
-            
-            # Zip db_data
-            db_data_dir = "/app/db_data"
-            if os.path.exists(db_data_dir):
-                for root, _, files in os.walk(db_data_dir):
-                    for file in files:
-                        file_path = os.path.join(root, file)
-                        arcname = os.path.relpath(file_path, start="/app")
-                        zipf.write(file_path, arcname)
+            # Helper function to safely add files
+            def add_directory(dir_path):
+                if os.path.exists(dir_path):
+                    for root, _, files in os.walk(dir_path):
+                        for file in files:
+                            file_path = os.path.join(root, file)
+                            # Only zip regular files, ignore symlinks/sockets
+                            if os.path.isfile(file_path) and not os.path.islink(file_path):
+                                arcname = os.path.relpath(file_path, start="/app")
+                                zipf.write(file_path, arcname)
+
+            # Zip directories
+            add_directory("/app/uploads")
+            add_directory("/app/db_data")
+            add_directory("/app/certbot")
                         
         return FileResponse(path=zip_filename, filename="tihar_backup.zip", media_type="application/zip")
     except Exception as e:

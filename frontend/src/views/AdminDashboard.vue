@@ -374,6 +374,8 @@ const editingItem = ref(null);
 const editLoading = ref(false);
 const editImagePreview = ref(null);
 const editSelectedFile = ref(null);
+
+const exporting = ref(false);
 const editIsDragging = ref(false);
 const editFileInput = ref(null);
 
@@ -469,7 +471,7 @@ const handleExport = async () => {
   exporting.value = true;
   try {
     const token = localStorage.getItem('admin_token');
-    const response = await axios.get('/api/backup/export', {
+    const response = await axios.get(`${API_URL}/backup/export`, {
       headers: { Authorization: `Bearer ${token}` },
       responseType: 'blob'
     });

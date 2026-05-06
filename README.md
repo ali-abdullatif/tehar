@@ -1,75 +1,79 @@
-# Al-Molook Jewelry E-Commerce Platform (مجوهرات تيهار)
+# Tihar Jewelry E-Commerce Platform
 
-A high-end, responsive Arabic jewelry web application featuring a modern "Golden Ratio" layout, luxury aesthetics, and a comprehensive management dashboard.
+A premium, full-stack Arabic e-commerce platform built for luxury jewelry. The platform features a responsive, dynamic frontend for customers, a secure backend API, and a fully functional admin dashboard for managing products, categories, analytics, and site configuration.
 
-## Tech Stack
+## 🚀 Tech Stack
+- **Frontend:** Vue.js 3, Vanilla CSS (Glassmorphism & Gold Theme)
+- **Backend:** Python (FastAPI), SQLAlchemy, MySQL
+- **Infrastructure:** Docker, Docker Compose, Nginx (Reverse Proxy)
+- **Security:** Let's Encrypt (Certbot SSL), JWT Authentication
 
-### Frontend
-- **Framework**: Vue 3 (Composition API, `<script setup>`)
-- **Build Tool**: Vite
-- **Styling**: Custom CSS (Glassmorphism, Luxury Arabic Theme)
-- **Routing**: Vue Router
-- **Data Visualization**: Chart.js / Vue-Chartjs
-- **HTTP Client**: Axios
+## 📂 Project Structure
+- `/frontend`: Vue.js storefront and Admin Panel.
+- `/backend`: FastAPI application, endpoints, and database models.
+- `/nginx`: Nginx reverse proxy configurations (HTTP & HTTPS).
+- `docker-compose.yml`: Main container orchestration file.
 
-### Backend
-- **Framework**: FastAPI (Python)
-- **Database ORM**: SQLAlchemy
-- **Authentication**: JWT, bcrypt (Passlib)
-- **Server**: Uvicorn & Gunicorn
-- **Data Validation**: Pydantic
+---
 
-### Infrastructure & Services
-- **Database**: MySQL 8.0
-- **Database Management**: phpMyAdmin
-- **Containerization**: Docker & Docker Compose
-- **Web Server**: Nginx (via Frontend Dockerfile)
+## 💻 Local Development (Testing)
 
-## Project Structure
+For local development, the platform is configured to run entirely over HTTP on port 80.
 
-- `/frontend` - Vue 3 Single Page Application
-- `/backend` - FastAPI REST API
-- `/db_data` - Local volume mount for MySQL data persistence
-- `/uploads` - Local volume mount for persistent image uploads
-- `docker-compose.yml` - Multi-container deployment configuration
-
-## Getting Started
-
-### Prerequisites
-- Docker
-- Docker Compose
-
-### Running the Application
-
-1. Clone the repository and navigate to the project directory:
+1. **Clone the repository:**
    ```bash
-   cd ahweb
+   git clone https://github.com/ali-abdullatif/tehar.git
+   cd tehar
    ```
 
-2. Start the services using Docker Compose:
+2. **Start the containers:**
    ```bash
-   docker-compose up -d --build
+   docker compose up --build -d
    ```
 
-3. Access the application:
-   - **Frontend Application**: [http://localhost:8080](http://localhost:8080)
-   - **Backend API Docs (Swagger)**: [http://localhost:8000/docs](http://localhost:8000/docs)
-   - **phpMyAdmin**: [http://localhost:8081](http://localhost:8081)
+3. **Access the platform:**
+   - Storefront: `http://localhost`
+   - Admin Panel: `http://localhost/admin`
+   - PhpMyAdmin: `http://localhost/phpmyadmin`
 
-## Default Credentials
+---
 
-### Database (MySQL)
-- User: `user`
-- Password: `prod_db_pass_77`
-- Root Password: `prod_root_pass_99`
-- Database Name: `ahweb`
+## 🌍 Production Deployment (VPS)
 
-### Admin Dashboard
-- Username: `admin`
-- Password: `change_this_admin_pass`
+When deploying to a public server (VPS), you must secure the platform with HTTPS.
 
-*(Note: These are defined in `docker-compose.yml` and should be changed in a production environment via `.env` file.)*
+1. **Point your Domain:**
+   Ensure your domain (e.g., `tihar.site`) has an `A Record` pointing to your VPS IP address.
 
-## Deployment
+2. **Run the Initial Setup:**
+   On your VPS, clone the code and run the setup script to install Docker and build the project:
+   ```bash
+   chmod +x setup_vps.sh
+   sudo ./setup_vps.sh
+   ```
 
-The provided `docker-compose.yml` mounts local directories (`./db_data` and `./uploads`) to ensure that database records and user-uploaded media persist across container restarts. Gunicorn runs behind Uvicorn workers in the FastAPI container for robust API performance.
+3. **Enable SSL (HTTPS):**
+   Run the automated Certbot script. This will automatically generate Let's Encrypt certificates and configure Nginx to use them securely.
+   ```bash
+   chmod +x init-letsencrypt.sh
+   sudo ./init-letsencrypt.sh
+   ```
+
+4. **Updating the Code in the Future:**
+   When you push new changes to GitHub, log into your VPS and run:
+   ```bash
+   git pull
+   sudo docker compose up --build -d
+   ```
+   *(Your SSL certificates are safely stored and will not be broken by git pulls or container rebuilds).*
+
+---
+
+## 🔒 Default Admin Credentials
+For security, change these inside `docker-compose.yml` or your `.env` file before going to production:
+- **Username:** `admin`
+- **Password:** `change_this_admin_pass`
+
+## 💾 Backups
+You can download a full backup (Database + Uploaded Images + SSL Certificates) directly from the **Admin Dashboard -> Site Settings**. 
+Alternatively, the raw files are persistently mapped to the `./db_data`, `./uploads`, and `./data/certbot` directories on your host machine.

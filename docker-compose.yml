@@ -42,6 +42,7 @@ services:
     volumes:
       - ./uploads:/app/uploads
       - ./db_data:/app/db_data:ro
+      - ./data/certbot:/app/certbot:ro
     depends_on:
       - db
 
@@ -62,7 +63,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/${NGINX_CONF:-nginx.conf}:/etc/nginx/conf.d/default.conf:ro
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot
     depends_on:

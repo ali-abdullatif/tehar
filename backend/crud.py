@@ -111,7 +111,7 @@ def get_item(db: Session, item_id: int):
     return db.query(models.JewelryItem).filter(models.JewelryItem.id == item_id).first()
 
 def get_items(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.JewelryItem).offset(skip).limit(limit).all()
+    return db.query(models.JewelryItem).order_by(models.JewelryItem.id.desc()).offset(skip).limit(limit).all()
 
 def create_item(db: Session, item: schemas.ItemCreate):
     item_data = item.model_dump(exclude={"gallery_images"})

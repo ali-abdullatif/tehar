@@ -37,6 +37,9 @@ docker compose run --rm --entrypoint "\
 echo
 
 
+echo "### Applying SSL Nginx Configuration ..."
+echo "NGINX_CONF=nginx-ssl.conf" >> .env
+
 echo "### Starting nginx ..."
 docker compose up --force-recreate -d nginx
 echo
