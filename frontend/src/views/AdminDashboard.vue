@@ -204,13 +204,16 @@
 
               <div class="config-section">
                 <h4>🖼 صورة الواجهة</h4>
-                <div class="hero-preview-zone" @click="$refs.heroInput.click()">
-                  <img v-if="siteConfig.hero_image" :src="siteConfig.hero_image" class="hero-preview-img" />
-                  <div v-else class="hero-preview-placeholder">
+                <div class="hero-preview-zone" @click="$refs.heroInput.click()" :class="{ 'is-loading': heroUploading }">
+                  <div v-if="heroUploading" class="upload-overlay">
+                    <span class="spinner"></span>
+                  </div>
+                  <img v-if="siteConfig.hero_image && !heroUploading" :src="siteConfig.hero_image" class="hero-preview-img" />
+                  <div v-else-if="!heroUploading" class="hero-preview-placeholder">
                     <span>رفع صورة احترافية (1920x1080)</span>
                   </div>
                 </div>
-                <input ref="heroInput" type="file" style="display:none" @change="handleHeroUpload" />
+                <input ref="heroInput" type="file" style="display:none" accept="image/*" @change="handleHeroUpload" />
               </div>
 
               <div class="config-section full-width">
@@ -364,6 +367,7 @@ const galleryInput = ref(null);
 const newItem = ref({ name: '', product_code: '', price: null, description: '', category_id: null, gallery_images: [] });
 const newCategoryName = ref('');
 const galleryLoading = ref(false);
+const heroUploading = ref(false);
 
 // Edit state
 const editingItem = ref(null);
@@ -487,6 +491,7 @@ const handleExport = async () => {
 const handleHeroUpload = async (e) => {
   const file = e.target.files[0];
   if (!file) return;
+  heroUploading.value = true;
   try {
     const url = await uploadImageFile(file);
     if (url) {
@@ -495,6 +500,8 @@ const handleHeroUpload = async (e) => {
     }
   } catch (e) {
     console.error('Error uploading hero image:', e);
+  } finally {
+    heroUploading.value = false;
   }
 };
 
@@ -1284,6 +1291,22 @@ input:-webkit-autofill:focus {
   border: 2px dashed rgba(212,175,55,0.3);
   cursor: pointer;
   position: relative;
+}
+
+.hero-preview-zone.is-loading {
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+.upload-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: 12px;
 }
 
 .hero-preview-img {
