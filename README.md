@@ -58,12 +58,13 @@ When deploying to a public server (VPS), you must secure the platform with HTTPS
    chmod +x init-letsencrypt.sh
    sudo ./init-letsencrypt.sh
    ```
+   *(Note: This script automatically creates a `.env` file containing `NGINX_CONF=nginx-ssl.conf`. This tells Docker to use the secure HTTPS configuration instead of the default local HTTP configuration. If your site ever drops back to HTTP on the VPS, simply recreate this file and restart Nginx).*
 
 4. **Updating the Code in the Future:**
    When you push new changes to GitHub, log into your VPS and run:
    ```bash
    git pull
-   sudo docker compose up --build -d
+   sudo docker compose up --build -d && sudo docker compose restart nginx
    ```
    *(Your SSL certificates are safely stored and will not be broken by git pulls or container rebuilds).*
 

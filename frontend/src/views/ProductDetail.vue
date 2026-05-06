@@ -14,7 +14,7 @@
         <!-- Gallery Section -->
         <div class="gallery-column">
           <div class="main-image-wrap glass-morphism">
-            <img :src="activeImage" :alt="product.name" class="main-image" />
+            <img :src="activeImage" :alt="product.name" class="main-image" loading="lazy" />
           </div>
           
           <div v-if="allImages.length > 1" class="thumbnails-row">
@@ -25,7 +25,7 @@
               :class="{ active: activeImage === img }"
               @click="activeImage = img"
             >
-              <img :src="img" alt="Thumbnail" />
+              <img :src="img" alt="Thumbnail" loading="lazy" />
             </div>
           </div>
         </div>

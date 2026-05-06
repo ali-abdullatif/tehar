@@ -5,7 +5,9 @@ from pathlib import Path
 import hashlib
 import zipfile
 import tempfile
-import shutil
+import zipfile
+import io
+from PIL import Image
 from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Request
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -165,15 +167,30 @@ async def upload_image(file: UploadFile = File(...)):
     if not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Only image files are allowed")
 
-    # Generate a unique filename to avoid collisions
-    suffix = Path(file.filename).suffix
-    unique_filename = f"{uuid.uuid4()}{suffix}"
+    # Generate a unique filename as WebP
+    unique_filename = f"{uuid.uuid4()}.webp"
     dest = UPLOAD_DIR / unique_filename
 
-    # Write file to disk
+    # Read image and compress using Pillow
     contents = await file.read()
-    with open(dest, "wb") as f:
-        f.write(contents)
+    try:
+        img = Image.open(io.BytesIO(contents))
+        
+        # Convert RGBA to RGB (WebP supports transparency, but if it's purely RGB it's smaller)
+        # However, WebP supports RGBA directly, so we can just save it.
+        # Resize if width is larger than 1920 to save massive space
+        max_width = 1920
+        if img.width > max_width:
+            ratio = max_width / img.width
+            new_size = (max_width, int(img.height * ratio))
+            img = img.resize(new_size, Image.Resampling.LANCZOS)
+            
+        # Save as WebP with 80% quality
+        img.save(dest, format="WEBP", quality=80, optimize=True)
+    except Exception as e:
+        # Fallback to direct write if it's not a readable image
+        with open(dest, "wb") as f:
+            f.write(contents)
 
     # Return a URL the frontend can use to display the image
     backend_host = os.getenv("BACKEND_PUBLIC_HOST", "http://localhost:8000")
