@@ -3,7 +3,7 @@
     <div class="container">
       <div class="section-header">
         <h3 class="gold-gradient">روائعنا المختارة</h3>
-        <p>نخبة من أجود المصاغ المرصع بأنقى الأحجار الكريمة</p>
+        <p>مجموعة مختارة من التصاميم العصرية التي تمنح إطلالتكم بريقاً استثنائياً.</p>
       </div>
       
       <div v-if="loading" style="text-align: center; color: white;">جاري التحميل...</div>
